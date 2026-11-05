@@ -38,7 +38,7 @@
       modePeak: (p, r) => `赤い場所に立つと、${p.name_ja}（${p.elev_m.toLocaleString()} m）の山頂が見える。その広さは${ha(p.visible_ha)}（公園の${r}倍）`,
       back: '全体に戻る', pickAll: '全15座をまとめて表示',
       to3d: '立体表示にする', to2d: '平面表示に戻す', opacity: '色の濃さ', rangeLbl: '計算範囲', parkKey: '日高山脈襟裳十勝国立公園の区域（概略）',
-      legendLo: '1座', legendHi: N + '座すべて', single: 'この山頂が見える場所',
+      legendLo: '1座', legendHi: N + '座すべて', single: p => `${p.name_ja}の山頂が見える場所`,
       tipNone: 'ここからは主な山頂が見えません', tipHead: n => `ここから見える山: ${n}座`,
       lang: 'English', ha: v => (v / 10000).toFixed(1) + '万ha',
       notes: () => `
@@ -81,7 +81,7 @@
       modePeak: (p, r) => `Stand anywhere in red and you can see the summit of ${p.name_en} (${p.elev_m.toLocaleString()} m). That area is ${ha(p.visible_ha)} (${r} times the park)`,
       back: 'Show all', pickAll: 'All 15 peaks combined',
       to3d: 'Show in 3D', to2d: 'Back to 2D', opacity: 'Colour opacity', rangeLbl: 'Calculation extent', parkKey: 'Hidakasanmyaku-Erimo-Tokachi National Park (approximate)',
-      legendLo: '1 peak', legendHi: 'all ' + N, single: 'Places that can see this summit',
+      legendLo: '1 peak', legendHi: 'all ' + N, single: p => `Places that can see the summit of ${p.name_en}`,
       tipNone: 'No main peak visible from here', tipHead: n => `Peaks visible from here: ${n}`,
       lang: '日本語', ha: v => Math.round(v).toLocaleString('en') + ' ha',
       notes: () => `
@@ -322,7 +322,7 @@
       mode.textContent = t.modePeak(p, (p.visible_ha / stats.park_ha).toFixed(1));
       const b = document.createElement('button'); b.type = 'button'; b.textContent = t.back; b.onclick = () => select(null);
       mode.appendChild(b);
-      lg.innerHTML = `<div class="single"><span class="sw"></span>${t.single}</div>` + parkKey(t);
+      lg.innerHTML = `<div class="single"><span class="sw"></span>${t.single(p)}</div>` + parkKey(t);
     } else {
       mode.textContent = t.modeAll;
       lg.innerHTML = '<div class="bar">' + Object.values(layers.colors).map(c => `<span style="background:${c}"></span>`).join('') +
