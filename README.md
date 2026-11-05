@@ -1,7 +1,6 @@
-# 日本一広い国立公園は、どこから見える？
+# 日高山脈襟裳十勝国立公園が見える場所マップ
 
-**Where can you see Japan's largest national park from?**
-日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park
+**Places that can see Hidakasanmyaku-Erimo-Tokachi National Park**
 
 #30DayMapChallenge 2026 Day 5「Senses: Sight」の作品です。
 

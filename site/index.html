@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>日本一広い国立公園は、どこから見える？</title>
+<title>日高山脈襟裳十勝国立公園が見える場所マップ</title>
 <meta name="description" content="日高山脈襟裳十勝国立公園の主な山頂15座が、地形の上でどこから見えるかを計算した地図。#30DayMapChallenge 2026 Day 5 Senses: Sight">
-<meta property="og:title" content="日本一広い国立公園は、どこから見える？">
+<meta property="og:title" content="日高山脈襟裳十勝国立公園が見える場所マップ">
 <meta property="og:description" content="日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park の主な山頂の可視領域">
 <meta property="og:image" content="https://shinyanakashima.github.io/30daymapchallenge-2026day5-hidakasanmyaku/card.png">
 <meta property="og:type" content="website">
@@ -22,14 +22,12 @@
     <p class="kicker">#30DayMapChallenge 2026 · Day 5 · Senses: Sight</p>
     <button id="lang" type="button" aria-label="Language">English</button>
   </div>
-  <h1 data-i18n="title">日本一広い国立公園は、どこから見える？</h1>
-  <p class="sub" data-i18n="subtitle">日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park</p>
-  <p class="lead" id="lead"></p>
-  <div class="figs">
-    <div><span class="num" id="f-park"></span><span class="lbl" data-i18n="figPark">公園の陸域面積</span></div>
-    <div><span class="num" id="f-tokyo"></span><span class="lbl" data-i18n="figTokyo">東京都の面積</span></div>
-    <div class="hl"><span class="num" id="f-vis"></span><span class="lbl" data-i18n="figVis">主な山頂が1座でも見える場所の広さ</span></div>
+  <div class="title-row">
+    <h1 data-i18n="title">日高山脈襟裳十勝国立公園が見える場所マップ</h1>
+    <button id="info" type="button" aria-expanded="false" aria-controls="lead" aria-label="説明 / About">i</button>
   </div>
+  <p class="sub" data-i18n="subtitle">Places that can see Hidakasanmyaku-Erimo-Tokachi National Park</p>
+  <p class="lead" id="lead" hidden></p>
   <div id="mode"></div>
   <div id="legend"></div>
   <select id="pick" aria-label="山を選ぶ / Choose a peak"></select>
@@ -37,7 +35,6 @@
     <button id="btn3d" type="button"></button>
     <label for="op"><span id="opLbl"></span><input id="op" type="range" min="0" max="100" step="5" value="70"></label>
   </div>
-  <div class="hint" id="hint"></div>
   <details id="notes">
     <summary data-i18n="notesTitle">注記・計算の条件・出典</summary>
     <div id="notes-body"></div>

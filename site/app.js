@@ -27,24 +27,16 @@
 
   const T = {
     ja: {
-      title: '日本一広い国立公園は、どこから見える？',
-      subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
+      title: '日高山脈襟裳十勝国立公園が見える場所マップ',
+      subtitle: 'Places that can see Hidakasanmyaku-Erimo-Tokachi National Park',
       lead: s => `公園の陸域は東京都より広い。この公園の主な山頂${N}座のうち、どれか1座でも地形の上で見える場所を合わせると、公園の${s.ratio_park.toFixed(1)}倍、東京都の${s.ratio_tokyo.toFixed(1)}倍の広さになる。最も遠いのは岩手県の岩手山付近で、${far.name_ja}から約${Math.round(far.farthest_km)} km離れている。`,
-      figPark: '公園の陸域面積', figTokyo: '東京都の面積', figVis: '主な山頂が1座でも見える場所の広さ',
-      hint: `<ul>
-<li><b>地図の色</b>: その地点に立ったときに見える山頂の数</li>
-<li><b>地図にカーソルを乗せる</b>（スマートフォンではタップ）: その地点から見える山の名前と、山頂への線を表示</li>
-<li><b>山頂の▲をクリック</b>（または選択欄）: その山の山頂が見える場所だけを赤で表示</li>
-<li><b>立体表示にする</b>: 地形を立体で表示（右ドラッグまたは2本指で傾きと向きを変更）</li>
-<li><b>色の濃さ</b>: 下げると地形が見えやすくなる</li>
-</ul>`,
       notesTitle: '注記・計算の条件・出典',
-      modeAll: `地図の色 ＝ その地点に立ったときに見える山頂の数（全${N}座）`,
+      modeAll: '山頂が良く見えるエリア',
       legendNone: '色なし: どの山頂も見えない',
       modePeak: (p, r) => `赤い場所に立つと、${p.name_ja}（${p.elev_m.toLocaleString()} m）の山頂が見える。その広さは${ha(p.visible_ha)}（公園の${r}倍）`,
       back: '全体に戻る', pickAll: '全15座をまとめて表示',
-      to3d: '立体表示にする', to2d: '平面表示に戻す', opacity: '色の濃さ', rangeLbl: '計算範囲', parkKey: '日高山脈襟裳十勝国立公園の区域（概略）',
-      legendLo: '1座', legendHi: N + '座すべて', single: p => `${p.name_ja}の山頂が見える場所`,
+      to3d: '立体表示にする', to2d: '平面表示に戻す', opacity: '色の濃さ', rangeLbl: '計算範囲', parkLbl: '陸域面積', info: '説明', parkKey: '日高山脈襟裳十勝国立公園の区域（概略）',
+      legendLo: '1座しか見えない', legendHi: N + '座すべてが見える', single: p => `${p.name_ja}の山頂が見える場所`,
       tipNone: 'この地点からは、どの山頂も見えません', tipHead: n => `この地点から見える山頂: ${n}座`,
       lang: 'English', ha: v => (v / 10000).toFixed(1) + '万ha',
       notes: () => `
@@ -76,24 +68,16 @@
 <p><a href="https://github.com/shinyanakashima/30daymapchallenge-2026day5-hidakasanmyaku">計算スクリプト（GitHub）</a></p>`
     },
     en: {
-      title: "Where can you see Japan's largest national park from?",
-      subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
+      title: 'Places that can see Hidakasanmyaku-Erimo-Tokachi National Park',
+      subtitle: '日高山脈襟裳十勝国立公園が見える場所マップ',
       lead: s => `The park's land area is larger than Tokyo. All the places from which at least one of its ${N} main peaks can be seen, by terrain alone, add up to ${s.ratio_park.toFixed(1)} times the park and ${s.ratio_tokyo.toFixed(1)} times Tokyo. The farthest such point is near Mount Iwate in Iwate Prefecture, about ${Math.round(far.farthest_km)} km from ${far.name_en}.`,
-      figPark: 'Park land area', figTokyo: 'Area of Tokyo', figVis: 'Area of places that can see at least one main peak',
-      hint: `<ul>
-<li><b>Map colour</b>: how many summits you can see when standing at that spot</li>
-<li><b>Hover over the map</b> (tap on a phone): lists the peaks visible from that spot and draws lines to them</li>
-<li><b>Click a ▲ summit</b> (or use the menu): shows in red only the places that can see that summit</li>
-<li><b>Show in 3D</b>: drapes the map over the terrain (right-drag or two fingers to tilt and rotate)</li>
-<li><b>Colour opacity</b>: lower it to see more of the terrain</li>
-</ul>`,
       notesTitle: 'Notes, method and sources',
-      modeAll: `Map colour = how many of the ${N} summits you can see when standing at that spot`,
+      modeAll: 'Where the summits can be seen well',
       legendNone: 'No colour: none of them visible',
       modePeak: (p, r) => `Stand anywhere in red and you can see the summit of ${p.name_en} (${p.elev_m.toLocaleString()} m). That area is ${ha(p.visible_ha)} (${r} times the park)`,
       back: 'Show all', pickAll: 'All 15 peaks combined',
-      to3d: 'Show in 3D', to2d: 'Back to 2D', opacity: 'Colour opacity', rangeLbl: 'Calculation extent', parkKey: 'Hidakasanmyaku-Erimo-Tokachi National Park (approximate)',
-      legendLo: '1 peak', legendHi: 'all ' + N, single: p => `Places that can see the summit of ${p.name_en}`,
+      to3d: 'Show in 3D', to2d: 'Back to 2D', opacity: 'Colour opacity', rangeLbl: 'Calculation extent', parkLbl: 'Land area', info: 'About', parkKey: 'Hidakasanmyaku-Erimo-Tokachi National Park (approximate)',
+      legendLo: 'only 1 visible', legendHi: 'all ' + N + ' visible', single: p => `Places that can see the summit of ${p.name_en}`,
       tipNone: 'No summit visible from this spot', tipHead: n => `Summits visible from this spot: ${n}`,
       lang: '日本語', ha: v => Math.round(v).toLocaleString('en') + ' ha',
       notes: () => `
@@ -311,21 +295,28 @@
   }
 
   let parkOn = true;
+  // park label above the northern tip of the park
+  const parkGeo = await fetch('data/park.geojson').then(r => r.json());
+  let top = [0, -90];
+  parkGeo.features.forEach(f => (f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : [f.geometry.coordinates])
+    .forEach(poly => poly[0].forEach(c => { if (c[1] > top[1]) top = c; })));
+  const parkLblEl = document.createElement('div');
+  parkLblEl.className = 'park-lbl';
+  new maplibregl.Marker({ element: parkLblEl, anchor: 'bottom', offset: [0, -6] }).setLngLat(top).addTo(map);
   const parkKey = t => `<label class="single park-key"><input type="checkbox" id="parkToggle"${parkOn ? ' checked' : ''}><span class="pk"></span>${t.parkKey}</label>`;
   function setPark(on) {
     parkOn = on;
     ['park-fill', 'park-casing', 'park-line'].forEach(l => map.setLayoutProperty(l, 'visibility', on ? 'visible' : 'none'));
+    parkLblEl.style.display = on ? '' : 'none';
   }
   function render() {
     const t = T[lang];
     document.documentElement.lang = lang;
     document.title = t.title;
     document.querySelectorAll('[data-i18n]').forEach(el => { const v = t[el.dataset.i18n]; el.textContent = typeof v === 'function' ? v(stats) : v; });
-    document.getElementById('hint').innerHTML = t.hint;
     document.getElementById('lead').textContent = t.lead(stats);
-    document.getElementById('f-park').textContent = ha(stats.park_ha);
-    document.getElementById('f-tokyo').textContent = ha(stats.tokyo_ha);
-    document.getElementById('f-vis').textContent = ha(stats.visible_any_ha);
+    document.getElementById('info').title = t.info;
+    parkLblEl.innerHTML = `${lang === 'ja' ? '日高山脈襟裳十勝国立公園' : 'Hidakasanmyaku-Erimo-Tokachi<br>National Park'}<br><span>${t.parkLbl} ${ha(stats.park_ha)}</span>`;
     document.getElementById('lang').textContent = t.lang;
     document.getElementById('notes-body').innerHTML = t.notes();
     const mode = document.getElementById('mode');
@@ -379,6 +370,11 @@
   });
   document.getElementById('op').addEventListener('input', e => {
     ['vis-count', 'vis-peak'].forEach(l => map.setPaintProperty(l, 'raster-opacity', Number(e.target.value) / 100));
+  });
+  document.getElementById('info').addEventListener('click', e => {
+    const lead = document.getElementById('lead');
+    lead.hidden = !lead.hidden;
+    e.currentTarget.setAttribute('aria-expanded', String(!lead.hidden));
   });
   document.getElementById('legend').addEventListener('change', e => {
     if (e.target.id === 'parkToggle') setPark(e.target.checked);
