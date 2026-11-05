@@ -1,6 +1,6 @@
 """国土地理院 標高タイル（DEM10B 由来, PNG形式）を取得して GeoTIFF にまとめる。
 
-出力: work/dem_z13.tif（Web メルカトル, ズーム13）
+出力: work/dem_src.tif（Web メルカトル, ズーム12, 約28 m 間隔）
 """
 import math
 import os
@@ -14,12 +14,12 @@ import requests
 from PIL import Image
 from rasterio.transform import from_origin
 
-Z = 13
-# 計算範囲（経緯度）: 日高山脈からおよそ 150 km
-WEST, EAST, SOUTH, NORTH = 141.0, 144.7, 41.7, 44.1
+Z = 12
+# 計算範囲（経緯度）: 北海道全体と青森県北部。見える土地が範囲の端に届かない広さ
+WEST, EAST, SOUTH, NORTH = 139.3, 146.0, 40.4, 45.6
 URL = "https://cyberjapandata.gsi.go.jp/xyz/dem_png/{z}/{x}/{y}.png"
 WORK = os.path.join(os.path.dirname(__file__), "..", "work")
-CACHE = os.path.join(WORK, "tiles")
+CACHE = os.path.join(WORK, f"tiles_z{Z}")
 R = 6378137.0
 ORIGIN = math.pi * R
 
@@ -79,7 +79,7 @@ def main():
                 print(i, file=sys.stderr)
     res = 2 * ORIGIN / 2**Z / 256
     tr = from_origin(-ORIGIN + x0 * 256 * res, ORIGIN - y0 * 256 * res, res, res)
-    with rasterio.open(os.path.join(WORK, "dem_z13.tif"), "w", driver="GTiff", width=W, height=H,
+    with rasterio.open(os.path.join(WORK, "dem_src.tif"), "w", driver="GTiff", width=W, height=H,
                        count=1, dtype="float32", crs="EPSG:3857", transform=tr, nodata=np.nan,
                        compress="deflate", tiled=True) as dst:
         dst.write(dem, 1)

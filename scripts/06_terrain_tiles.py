@@ -1,6 +1,6 @@
 """3D 表示用の標高タイル（Terrarium 形式 PNG）を作る。海とデータなしは 0 m。
 
-入力: work/dem_z13.tif（Web メルカトル, ズーム13相当）
+入力: work/dem_src.tif（Web メルカトル, ズーム12相当）
 出力: site/tiles/dem/{z}/{x}/{y}.png（ズーム6〜10）
 """
 import math
@@ -11,11 +11,11 @@ import rasterio
 from PIL import Image
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
-SRC = os.path.join(ROOT, "work", "dem_z13.tif")
+SRC = os.path.join(ROOT, "work", "dem_src.tif")
 OUT = os.path.join(ROOT, "site", "tiles", "dem")
 ZMIN, ZMAX = 6, 10
-SRC_Z = 13
-WEST, EAST, SOUTH, NORTH = 141.0, 144.7, 41.7, 44.1
+SRC_Z = 12
+WEST, EAST, SOUTH, NORTH = 139.3, 146.0, 40.4, 45.6
 
 
 def lon2x(lon, z):
@@ -28,7 +28,8 @@ def lat2y(lat, z):
 
 
 def encode(h):
-    v = np.clip(h + 32768.0, 0, 65535.99)
+    # 1 m 単位に丸める（ファイルを小さくするため）
+    v = np.clip(np.round(h) + 32768.0, 0, 65535)
     r = np.floor(v / 256)
     g = np.floor(v - r * 256)
     b = np.floor((v - r * 256 - g) * 256)

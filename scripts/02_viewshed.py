@@ -1,6 +1,6 @@
 """各山頂の可視領域を gdal_viewshed で計算し、ビット合成・山の数・面積集計を行う。
 
-入力: work/dem_z13.tif, data/peaks.csv
+入力: work/dem_src.tif, data/peaks.csv
 出力: work/dem30.tif, work/vs_<id>.tif, work/mask.tif, work/count.tif, data/stats.json
 """
 import csv
@@ -20,6 +20,8 @@ EYE = 1.6          # 目標（人）の目の高さ m
 CC = 0.85714       # 地球の丸みと大気差の補正係数（屈折係数 0.13 相当）
 PARK_HA = 245668
 TOKYO_HA = 219405
+BBOX = [139.3, 40.4, 146.0, 45.6]  # 計算範囲（経緯度）: 北海道全体と青森県北部
+EDGE = 0.03  # 端の判定幅（度）
 
 
 def run(cmd):
@@ -28,7 +30,7 @@ def run(cmd):
 
 
 def main():
-    src = os.path.join(WORK, "dem_z13.tif")
+    src = os.path.join(WORK, "dem_src.tif")
     dem30 = os.path.join(WORK, "dem30.tif")
     land = os.path.join(WORK, "dem30_land.tif")
     # 30 m 間隔に間引き（平均）して UTM へ
@@ -50,12 +52,21 @@ def main():
         profile = ds.profile
         transform = ds.transform
     is_land = landarr != -9999
-    mask = np.zeros(landarr.shape, dtype=np.uint16)
+    del landarr
+    mask = np.zeros(is_land.shape, dtype=np.uint16)
     out = []
+    to_ll = Transformer.from_crs(CRS, "EPSG:6668", always_xy=True)
+    with rasterio.open(src) as ds:
+        b = ds.bounds
+    ext = Transformer.from_crs("EPSG:3857", "EPSG:6668", always_xy=True)
+    dw, ds_ = ext.transform(b.left, b.bottom)
+    de, dn = ext.transform(b.right, b.top)
+    print("DEM extent", dw, ds_, de, dn)
     for i, p in enumerate(peaks):
         x, y = tr.transform(float(p["lon"]), float(p["lat"]))
         r, c = rasterio.transform.rowcol(transform, x, y)
-        ground = float(landarr[r, c])
+        with rasterio.open(land) as d:
+            ground = float(d.read(1, window=((r, r + 1), (c, c + 1)))[0, 0])
         # 観測点は山頂の標高（国土地理院の値）の地表に置く
         oz = max(0.0, float(p["elev_m"]) - ground)
         vs = os.path.join(WORK, f"vs_{p['id']}.tif")
@@ -65,8 +76,19 @@ def main():
             v = (ds.read(1) == 1) & is_land
         mask |= (v.astype(np.uint16) << i)
         ha = int(v.sum()) * RES * RES / 10000
-        out.append({**p, "bit": i, "visible_ha": round(ha), "observer_offset_m": round(oz, 1)})
-        print(p["name_ja"], round(ha), "ha")
+        rows, cols = np.nonzero(v)
+        del v
+        xs = transform.c + (cols + 0.5) * transform.a
+        ys = transform.f + (rows + 0.5) * transform.e
+        dist = np.hypot(xs - x, ys - y)
+        k = int(dist.argmax())
+        flon, flat = to_ll.transform(xs[k], ys[k])
+        lon, lat = to_ll.transform(xs, ys)
+        edge = int(((lon < dw + EDGE) | (lon > de - EDGE) | (lat < ds_ + EDGE) | (lat > dn - EDGE)).sum())
+        out.append({**p, "bit": i, "visible_ha": round(ha), "observer_offset_m": round(oz, 1),
+                    "farthest_km": round(float(dist[k]) / 1000, 1), "farthest_lonlat": [round(flon, 4), round(flat, 4)],
+                    "edge_cells": edge})
+        print(p["name_ja"], round(ha), "ha", "farthest", round(float(dist[k]) / 1000, 1), "km", "edge cells", edge)
 
     count = np.zeros(mask.shape, dtype=np.uint8)
     for i in range(len(peaks)):
@@ -90,7 +112,8 @@ def main():
         "ratio_tokyo": round(any_ha / TOKYO_HA, 2),
         "count_hist_ha": hist,
         "conditions": {"eye_height_m": EYE, "curvature_coeff": CC, "dem_resolution_m": RES,
-                       "crs": CRS, "bbox_lonlat": [141.0, 41.7, 144.7, 44.1]},
+                       "crs": CRS, "bbox_lonlat": BBOX},
+        "edge_cells_total": sum(p["edge_cells"] for p in out),
         "peaks": [{k: v for k, v in p.items()} for p in out],
     }
     json.dump(stats, open(os.path.join(ROOT, "data", "stats.json"), "w", encoding="utf-8"),
