@@ -27,6 +27,8 @@
 - 地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示します。
 - 右上のボタンで日本語と英語を切り替えます（`?lang=en` でも指定できます）。
 
+SNS投稿用の画像: [site/card.png](site/card.png)
+
 ## 注記
 
 - 標高データには木や建物が含まれていないため、「地形の上で見える範囲」です。森林や建物による遮り、天気や霞は考慮していません。
@@ -105,12 +107,17 @@ python3 scripts/03_export_web.py
 sh scripts/04_hillshade_tiles.sh
 ```
 
+```bash
+python3 scripts/05_card.py
+```
+
 | スクリプト | 内容 |
 | --- | --- |
 | `01_fetch_dem.py` | 標高タイルを取得して `work/dem_z13.tif` にまとめる |
 | `02_viewshed.py` | 30 m 格子に変換し、山頂ごとの可視領域、ビット合成、見える山の数、面積集計（`data/stats.json`） |
 | `03_export_web.py` | Web 表示用の画像（`site/data/`）を書き出す |
 | `04_hillshade_tiles.sh` | 背景の陰影図タイル（`site/tiles/hs/`）を作る |
+| `05_card.py` | SNS 投稿用の画像（`site/card.png`）を作る |
 
 中間ファイルは `work/` に置かれ、リポジトリには含めていません。公開しているのは計算済みの画像とタイルだけで、ブラウザでは可視領域の計算をしていません。
 
