@@ -27,8 +27,8 @@
 
   const T = {
     ja: {
-      title: '日高山脈襟裳十勝国立公園が見える場所マップ',
-      subtitle: 'Places that can see Hidakasanmyaku-Erimo-Tokachi National Park',
+      title: '日高山脈が見える場所マップ',
+      subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
       lead: s => `公園の陸域は東京都より広い。この公園の主な山頂${N}座のうち、どれか1座でも地形の上で見える場所を合わせると、公園の${s.ratio_park.toFixed(1)}倍、東京都の${s.ratio_tokyo.toFixed(1)}倍の広さになる。最も遠いのは岩手県の岩手山付近で、${far.name_ja}から約${Math.round(far.farthest_km)} km離れている。`,
       notesTitle: '注記・計算の条件・出典',
       modeAll: '山頂が良く見えるエリア',
@@ -68,8 +68,8 @@
 <p><a href="https://github.com/shinyanakashima/30daymapchallenge-2026day5-hidakasanmyaku">計算スクリプト（GitHub）</a></p>`
     },
     en: {
-      title: 'Places that can see Hidakasanmyaku-Erimo-Tokachi National Park',
-      subtitle: '日高山脈襟裳十勝国立公園が見える場所マップ',
+      title: 'Where you can see the Hidaka Mountains',
+      subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
       lead: s => `The park's land area is larger than Tokyo. All the places from which at least one of its ${N} main peaks can be seen, by terrain alone, add up to ${s.ratio_park.toFixed(1)} times the park and ${s.ratio_tokyo.toFixed(1)} times Tokyo. The farthest such point is near Mount Iwate in Iwate Prefecture, about ${Math.round(far.farthest_km)} km from ${far.name_en}.`,
       notesTitle: 'Notes, method and sources',
       modeAll: 'Where the summits can be seen well',

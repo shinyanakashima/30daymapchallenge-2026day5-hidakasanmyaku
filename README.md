@@ -1,6 +1,7 @@
-# 日高山脈襟裳十勝国立公園が見える場所マップ
+# 日高山脈が見える場所マップ
 
-**Places that can see Hidakasanmyaku-Erimo-Tokachi National Park**
+**Where you can see the Hidaka Mountains**
+日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park
 
 #30DayMapChallenge 2026 Day 5「Senses: Sight」の作品です。
 

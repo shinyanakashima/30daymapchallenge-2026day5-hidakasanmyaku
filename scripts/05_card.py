@@ -129,8 +129,8 @@ def main():
             halo((x - 10, y), p["name_ja"], f(17), anchor="rm")
 
     # header
-    d.text((40, 30), "日高山脈襟裳十勝国立公園が見える場所マップ", font=f(46), fill=(25, 28, 32))
-    d.text((42, 92), "Places that can see Hidakasanmyaku-Erimo-Tokachi National Park", font=f(20), fill=(90, 96, 104))
+    d.text((40, 30), "日高山脈が見える場所マップ", font=f(46), fill=(25, 28, 32))
+    d.text((42, 92), "日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park", font=f(20), fill=(90, 96, 104))
     vis_man = stats["visible_any_ha"] / 10000
     d.text((42, 132), f"公園の陸域 24.6万ha は東京都（21.9万ha）より広い。", font=f(24), fill=(25, 28, 32))
     d.text((42, 166), f"主な山頂{n}座のどれかが見える場所は {vis_man:.1f}万ha。公園の{stats['ratio_park']:.1f}倍、東京都の{stats['ratio_tokyo']:.1f}倍。",
