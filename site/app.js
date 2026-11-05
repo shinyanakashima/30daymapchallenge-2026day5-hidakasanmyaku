@@ -25,7 +25,7 @@
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
       lead: s => `公園の陸域は東京都より広い。主な山頂${N}座のうち1座以上が地形の上で見える土地は、公園の${s.ratio_park}倍、東京都の${s.ratio_tokyo}倍になる。`,
       figPark: '公園の陸域面積', figTokyo: '東京都の面積', figVis: `主な山頂が1座以上見える土地`,
-      hint: '山頂の印をクリックすると、その山だけの見える範囲に切り替わります。地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示します。「立体表示にする」で地形を立体で見られます（右ドラッグまたは2本指で傾きと向きを変えられます）。色の濃さを下げると下の地形が見えやすくなります。',
+      hint: '山頂の印をクリックすると、その山だけの見える範囲に切り替わります。地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示し、見える山頂へ線を引きます。見えない山の印は薄くなります。「立体表示にする」で地形を立体で見られます（右ドラッグまたは2本指で傾きと向きを変えられます）。色の濃さを下げると下の地形が見えやすくなります。',
       notesTitle: '注記・計算の条件・出典',
       modeAll: '色: 見える山の数（全' + N + '座）',
       modePeak: (p, r) => `${p.name_ja}（${p.elev_m.toLocaleString()} m）が見える土地: ${ha(p.visible_ha)}（公園の${r}倍）`,
@@ -65,7 +65,7 @@
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
       lead: s => `The park's land area is larger than Tokyo. Land from which at least one of its ${N} main peaks can be seen, by terrain alone, is ${s.ratio_park} times the park and ${s.ratio_tokyo} times Tokyo.`,
       figPark: 'Park land area', figTokyo: 'Area of Tokyo', figVis: 'Land that sees at least one main peak',
-      hint: 'Click a peak marker to show the area that sees that peak only. Hover over the map (tap on a phone) to list the peaks visible from that point. "Show in 3D" drapes the map over the terrain (right-drag or two fingers to tilt and rotate). Lower the colour opacity to see more of the terrain.',
+      hint: 'Click a peak marker to show the area that sees that peak only. Hover over the map (tap on a phone) to list the peaks visible from that point; lines are drawn to the visible summits and the other peak markers fade. "Show in 3D" drapes the map over the terrain (right-drag or two fingers to tilt and rotate). Lower the colour opacity to see more of the terrain.',
       notesTitle: 'Notes, method and sources',
       modeAll: `Colour: number of peaks visible (of ${N})`,
       modePeak: (p, r) => `Land that sees ${p.name_en} (${p.elev_m.toLocaleString()} m): ${ha(p.visible_ha)} (${r} times the park)`,
@@ -117,12 +117,19 @@
           bounds: layers.bounds,
           attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">国土地理院</a>' },
         vis: { type: 'image', url: 'data/count.png', coordinates: layers.coordinates },
+        sight: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
         dem: { type: 'raster-dem', tiles: ['tiles/dem/{z}/{x}/{y}.png'], encoding: 'terrarium', tileSize: 256, minzoom: 6, maxzoom: 10, bounds: layers.bounds }
       },
       layers: [
         { id: 'bg', type: 'background', paint: { 'background-color': '#dfe5ea' } },
         { id: 'hs', type: 'raster', source: 'hs', paint: { 'raster-opacity': 1 } },
-        { id: 'vis', type: 'raster', source: 'vis', paint: { 'raster-opacity': 0.7, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } }
+        { id: 'vis', type: 'raster', source: 'vis', paint: { 'raster-opacity': 0.7, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } },
+        { id: 'sight-casing', type: 'line', source: 'sight', filter: ['==', ['geometry-type'], 'LineString'],
+          layout: { 'line-cap': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 3.2, 'line-opacity': 0.75 } },
+        { id: 'sight-line', type: 'line', source: 'sight', filter: ['==', ['geometry-type'], 'LineString'],
+          layout: { 'line-cap': 'round' }, paint: { 'line-color': '#1f2328', 'line-width': 1.3 } },
+        { id: 'sight-pt', type: 'circle', source: 'sight', filter: ['==', ['geometry-type'], 'Point'],
+          paint: { 'circle-radius': 4.5, 'circle-color': '#1f2328', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 2 } }
       ]
     },
     bounds: [[141.2, 41.85], [144.55, 43.95]],
@@ -188,11 +195,35 @@
     return (maskData[i] << 8) | maskData[i + 1];
   }
   const tip = document.getElementById('tip');
-  function hideTip() { tip.hidden = true; }
+  const EMPTY = { type: 'FeatureCollection', features: [] };
+  let sightOn = false;
+  function setSight(ll, vis) {
+    const src = map.getSource('sight');
+    if (!src) return;
+    if (!ll) {
+      if (sightOn) src.setData(EMPTY);
+      sightOn = false;
+      peaks.forEach(p => peakEls[p.id].classList.remove('seen', 'unseen'));
+      return;
+    }
+    const from = [ll.lng, ll.lat];
+    src.setData({ type: 'FeatureCollection', features: [
+      ...vis.map(p => ({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [from, [p.lon, p.lat]] } })),
+      { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: from } }
+    ] });
+    sightOn = true;
+    const ids = new Set(vis.map(p => p.id));
+    peaks.forEach(p => {
+      peakEls[p.id].classList.toggle('seen', ids.has(p.id));
+      peakEls[p.id].classList.toggle('unseen', !ids.has(p.id));
+    });
+  }
+  function hideTip() { tip.hidden = true; setSight(null); }
   function showTip(e) {
     const b = bitsAt(e.lngLat);
     if (b === null) { hideTip(); return; }
     const vis = peaks.filter(p => (b >> p.bit) & 1);
+    setSight(e.lngLat, vis);
     const t = T[lang];
     tip.innerHTML = vis.length
       ? `<b>${t.tipHead(vis.length)}</b>` + vis.map(p => {

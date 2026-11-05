@@ -59,6 +59,8 @@ summary { cursor: pointer; font-weight: 600; }
 .peak { pointer-events: none; }
 .peak .hit { pointer-events: auto; cursor: pointer; padding: 3px 4px 1px; }
 .peak .tri { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid #222; }
+.peak.seen .tri { border-bottom-color: #c8283c; }
+.peak.unseen .hit, .peak.unseen .nm { opacity: .3; }
 .peak.on .tri { border-bottom-color: #c8283c; transform: scale(1.4); }
 .peak .nm { pointer-events: none; position: absolute; top: 2px; font-size: 11px; white-space: nowrap; color: #111; text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 3px #fff; }
 .peak.r .nm { left: 17px; }
