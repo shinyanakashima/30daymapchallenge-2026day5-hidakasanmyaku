@@ -31,15 +31,21 @@
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
       lead: s => `公園の陸域は東京都より広い。この公園の主な山頂${N}座のうち、どれか1座でも地形の上で見える場所を合わせると、公園の${s.ratio_park.toFixed(1)}倍、東京都の${s.ratio_tokyo.toFixed(1)}倍の広さになる。最も遠いのは岩手県の岩手山付近で、${far.name_ja}から約${Math.round(far.farthest_km)} km離れている。`,
       figPark: '公園の陸域面積', figTokyo: '東京都の面積', figVis: '主な山頂が1座でも見える場所の広さ',
-      hint: '山頂の印をクリックすると、その山だけの見える範囲に切り替わります。地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示し、見える山頂へ線を引きます。見えない山の印は薄くなります。「立体表示にする」で地形を立体で見られます（右ドラッグまたは2本指で傾きと向きを変えられます）。色の濃さを下げると下の地形が見えやすくなります。',
+      hint: `<ul>
+<li><b>地図の色</b>: その地点に立ったときに見える山頂の数</li>
+<li><b>地図にカーソルを乗せる</b>（スマートフォンではタップ）: その地点から見える山の名前と、山頂への線を表示</li>
+<li><b>山頂の▲をクリック</b>（または選択欄）: その山の山頂が見える場所だけを赤で表示</li>
+<li><b>立体表示にする</b>: 地形を立体で表示（右ドラッグまたは2本指で傾きと向きを変更）</li>
+<li><b>色の濃さ</b>: 下げると地形が見えやすくなる</li>
+</ul>`,
       notesTitle: '注記・計算の条件・出典',
-      modeAll: `色の意味: その場所から、${N}座のうち何座の山頂が見えるか`,
-      legendNone: '色の付いていない陸地からは、どの山頂も見えない',
+      modeAll: `地図の色 ＝ その地点に立ったときに見える山頂の数（全${N}座）`,
+      legendNone: '色なし: どの山頂も見えない',
       modePeak: (p, r) => `赤い場所に立つと、${p.name_ja}（${p.elev_m.toLocaleString()} m）の山頂が見える。その広さは${ha(p.visible_ha)}（公園の${r}倍）`,
       back: '全体に戻る', pickAll: '全15座をまとめて表示',
       to3d: '立体表示にする', to2d: '平面表示に戻す', opacity: '色の濃さ', rangeLbl: '計算範囲', parkKey: '日高山脈襟裳十勝国立公園の区域（概略）',
       legendLo: '1座', legendHi: N + '座すべて', single: p => `${p.name_ja}の山頂が見える場所`,
-      tipNone: 'ここからは主な山頂が見えません', tipHead: n => `ここから見える山: ${n}座`,
+      tipNone: 'この地点からは、どの山頂も見えません', tipHead: n => `この地点から見える山頂: ${n}座`,
       lang: 'English', ha: v => (v / 10000).toFixed(1) + '万ha',
       notes: () => `
 <h3>見える範囲の意味</h3>
@@ -74,15 +80,21 @@
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
       lead: s => `The park's land area is larger than Tokyo. All the places from which at least one of its ${N} main peaks can be seen, by terrain alone, add up to ${s.ratio_park.toFixed(1)} times the park and ${s.ratio_tokyo.toFixed(1)} times Tokyo. The farthest such point is near Mount Iwate in Iwate Prefecture, about ${Math.round(far.farthest_km)} km from ${far.name_en}.`,
       figPark: 'Park land area', figTokyo: 'Area of Tokyo', figVis: 'Area of places that can see at least one main peak',
-      hint: 'Click a peak marker to show the area that sees that peak only. Hover over the map (tap on a phone) to list the peaks visible from that point; lines are drawn to the visible summits and the other peak markers fade. "Show in 3D" drapes the map over the terrain (right-drag or two fingers to tilt and rotate). Lower the colour opacity to see more of the terrain.',
+      hint: `<ul>
+<li><b>Map colour</b>: how many summits you can see when standing at that spot</li>
+<li><b>Hover over the map</b> (tap on a phone): lists the peaks visible from that spot and draws lines to them</li>
+<li><b>Click a ▲ summit</b> (or use the menu): shows in red only the places that can see that summit</li>
+<li><b>Show in 3D</b>: drapes the map over the terrain (right-drag or two fingers to tilt and rotate)</li>
+<li><b>Colour opacity</b>: lower it to see more of the terrain</li>
+</ul>`,
       notesTitle: 'Notes, method and sources',
-      modeAll: `Colour: how many of the ${N} peaks can be seen from each place`,
-      legendNone: 'Uncoloured land cannot see any of them',
+      modeAll: `Map colour = how many of the ${N} summits you can see when standing at that spot`,
+      legendNone: 'No colour: none of them visible',
       modePeak: (p, r) => `Stand anywhere in red and you can see the summit of ${p.name_en} (${p.elev_m.toLocaleString()} m). That area is ${ha(p.visible_ha)} (${r} times the park)`,
       back: 'Show all', pickAll: 'All 15 peaks combined',
       to3d: 'Show in 3D', to2d: 'Back to 2D', opacity: 'Colour opacity', rangeLbl: 'Calculation extent', parkKey: 'Hidakasanmyaku-Erimo-Tokachi National Park (approximate)',
       legendLo: '1 peak', legendHi: 'all ' + N, single: p => `Places that can see the summit of ${p.name_en}`,
-      tipNone: 'No main peak visible from here', tipHead: n => `Peaks visible from here: ${n}`,
+      tipNone: 'No summit visible from this spot', tipHead: n => `Summits visible from this spot: ${n}`,
       lang: '日本語', ha: v => Math.round(v).toLocaleString('en') + ' ha',
       notes: () => `
 <h3>What "visible" means</h3>
@@ -265,7 +277,7 @@
     setSight(e.lngLat, vis);
     const t = T[lang];
     tip.innerHTML = vis.length
-      ? `<b>${t.tipHead(vis.length)}</b>` + vis.map(p => {
+      ? `<b>${selected ? '' : `<span class="tsw" style="background:${layers.colors[vis.length]}"></span>`}${t.tipHead(vis.length)}</b>` + vis.map(p => {
           const nm = lang === 'ja' ? p.name_ja : p.name_en;
           return p.id === selected ? `<u>${nm}</u>` : nm;
         }).join(lang === 'ja' ? '、' : ', ')
@@ -309,6 +321,7 @@
     document.documentElement.lang = lang;
     document.title = t.title;
     document.querySelectorAll('[data-i18n]').forEach(el => { const v = t[el.dataset.i18n]; el.textContent = typeof v === 'function' ? v(stats) : v; });
+    document.getElementById('hint').innerHTML = t.hint;
     document.getElementById('lead').textContent = t.lead(stats);
     document.getElementById('f-park').textContent = ha(stats.park_ha);
     document.getElementById('f-tokyo').textContent = ha(stats.tokyo_ha);

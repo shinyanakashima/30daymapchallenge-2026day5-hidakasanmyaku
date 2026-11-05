@@ -31,13 +31,13 @@
     <div class="hl"><span class="num" id="f-vis"></span><span class="lbl" data-i18n="figVis">主な山頂が1座でも見える場所の広さ</span></div>
   </div>
   <div id="mode"></div>
-  <select id="pick" aria-label="山を選ぶ / Choose a peak"></select>
   <div id="legend"></div>
+  <select id="pick" aria-label="山を選ぶ / Choose a peak"></select>
   <div id="view">
     <button id="btn3d" type="button"></button>
     <label for="op"><span id="opLbl"></span><input id="op" type="range" min="0" max="100" step="5" value="70"></label>
   </div>
-  <p class="hint" data-i18n="hint">山頂の印をクリックすると、その山だけの見える範囲に切り替わります。地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示し、見える山頂へ線を引きます。</p>
+  <div class="hint" id="hint"></div>
   <details id="notes">
     <summary data-i18n="notesTitle">注記・計算の条件・出典</summary>
     <div id="notes-body"></div>
