@@ -38,6 +38,8 @@
       to3d: '立体表示にする', to2d: '平面表示に戻す', opacity: '色の濃さ', rangeLbl: '計算範囲', parkLbl: '陸域面積', info: '説明', parkKey: '日高山脈襟裳十勝国立公園の区域（概略）',
       legendLo: '1座しか見えない', legendHi: N + '座すべてが見える', single: p => `${p.name_ja}の山頂が見える場所`,
       tipNone: 'この地点からは、どの山頂も見えません', tipHead: n => `この地点から見える山頂: ${n}座`,
+      spotTitle: '選んだ地点', spotClear: '解除', spotOutside: '陸地ではないか、計算範囲の外です',
+      spotHint: '地図をクリックすると、その地点を選び、見える山頂と緯度経度をここに表示します。地点の方から山頂を見る向きに、地図が傾きます。',
       lang: 'English', ha: v => (v / 10000).toFixed(1) + '万ha',
       notes: () => `
 <h3>見える範囲の意味</h3>
@@ -79,6 +81,8 @@
       to3d: 'Show in 3D', to2d: 'Back to 2D', opacity: 'Colour opacity', rangeLbl: 'Calculation extent', parkLbl: 'Land area', info: 'About', parkKey: 'Hidakasanmyaku-Erimo-Tokachi National Park (approximate)',
       legendLo: 'only 1 visible', legendHi: 'all ' + N + ' visible', single: p => `Places that can see the summit of ${p.name_en}`,
       tipNone: 'No summit visible from this spot', tipHead: n => `Summits visible from this spot: ${n}`,
+      spotTitle: 'Selected spot', spotClear: 'Clear', spotOutside: 'Not on land, or outside the calculation extent',
+      spotHint: 'Click the map to pick a spot. The summits visible from it and its coordinates appear here, and the map tilts to look from that spot towards the summits.',
       lang: '日本語', ha: v => Math.round(v).toLocaleString('en') + ' ha',
       notes: () => `
 <h3>What "visible" means</h3>
@@ -179,7 +183,6 @@
     el.className = 'peak ' + (LEFT.includes(p.id) ? 'l' : 'r') + (LABELED.includes(p.id) ? (MID.includes(p.id) ? ' mid' : '') : ' minor');
     el.innerHTML = '<div class="hit"><div class="tri"></div></div><div class="nm"></div>';
     el.querySelector('.hit').addEventListener('click', e => { e.stopPropagation(); select(selected === p.id ? null : p.id); });
-    el.querySelector('.hit').addEventListener('mouseenter', () => hideTip());
     new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([p.lon, p.lat]).addTo(map);
     peakEls[p.id] = el;
   });
@@ -195,7 +198,6 @@
   // hover: small bit tiles loaded on demand
   const MZ = layers.maskZoom;
   const tileCache = new Map();
-  let lastHover = null;
   function loadTile(key, x, y) {
     tileCache.set(key, null);
     const im = new Image();
@@ -204,7 +206,7 @@
       const ctx = c.getContext('2d', { willReadFrequently: true });
       ctx.drawImage(im, 0, 0);
       tileCache.set(key, ctx.getImageData(0, 0, 256, 256).data);
-      if (lastHover) showTip(lastHover);
+      if (anchor) updateSpot(false);
     };
     im.onerror = () => tileCache.set(key, 'none');
     im.src = `tiles/mask/${MZ}/${x}/${y}.png`;
@@ -227,15 +229,12 @@
     if (d[i + 2] !== 255) return null; // sea
     return (d[i] << 8) | d[i + 1];
   }
-  const tip = document.getElementById('tip');
   const EMPTY = { type: 'FeatureCollection', features: [] };
-  let sightOn = false;
   function setSight(ll, vis) {
     const src = map.getSource('sight');
     if (!src) return;
     if (!ll) {
-      if (sightOn) src.setData(EMPTY);
-      sightOn = false;
+      src.setData(EMPTY);
       peaks.forEach(p => peakEls[p.id].classList.remove('seen', 'unseen'));
       return;
     }
@@ -244,45 +243,71 @@
       ...vis.map(p => ({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [from, [p.lon, p.lat]] } })),
       { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: from } }
     ] });
-    sightOn = true;
     const ids = new Set(vis.map(p => p.id));
     peaks.forEach(p => {
       peakEls[p.id].classList.toggle('seen', ids.has(p.id));
       peakEls[p.id].classList.toggle('unseen', !ids.has(p.id));
     });
   }
-  function hideTip() { tip.hidden = true; lastHover = null; setSight(null); }
-  function showTip(e) {
-    lastHover = { lngLat: e.lngLat, point: e.point };
-    const b = bitsAt(e.lngLat);
-    if (b === undefined) return;
-    if (b === null) { hideTip(); return; }
-    const vis = peaks.filter(p => (b >> p.bit) & 1);
-    setSight(e.lngLat, vis);
-    const t = T[lang];
-    tip.innerHTML = vis.length
-      ? `<b>${selected ? '' : `<span class="tsw" style="background:${layers.colors[vis.length]}"></span>`}${t.tipHead(vis.length)}</b>` + vis.map(p => {
-          const nm = lang === 'ja' ? p.name_ja : p.name_en;
-          return p.id === selected ? `<u>${nm}</u>` : nm;
-        }).join(lang === 'ja' ? '、' : ', ')
-      : t.tipNone;
-    tip.hidden = false;
-    const rect = map.getContainer().getBoundingClientRect();
-    let x = e.point.x + 14, y = e.point.y + 14;
-    const tw = tip.offsetWidth, th = tip.offsetHeight;
-    if (x + tw > rect.width - 4) x = e.point.x - tw - 14;
-    if (y + th > rect.height - 4) y = e.point.y - th - 14;
-    tip.style.left = Math.max(4, x) + 'px'; tip.style.top = Math.max(4, y) + 'px';
+
+  // anchor: the spot the user clicked
+  let anchor = null, spot = null, pendingFly = false;
+  const toRad = d => d * Math.PI / 180;
+  function distKm(a, p) {
+    const dLat = toRad(p.lat - a.lat), dLon = toRad(p.lon - a.lng);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(p.lat)) * Math.sin(dLon / 2) ** 2;
+    return 12742 * Math.asin(Math.sqrt(h));
   }
-  const hoverable = window.matchMedia('(hover: hover)').matches;
-  if (hoverable) {
-    map.on('mousemove', showTip);
-    map.on('mouseout', hideTip);
-    map.on('dragstart', hideTip);
-  } else {
-    map.on('click', showTip);
-    map.on('movestart', hideTip);
+  function bearingTo(a, b) {
+    const y = Math.sin(toRad(b.lng - a.lng)) * Math.cos(toRad(b.lat));
+    const x = Math.cos(toRad(a.lat)) * Math.sin(toRad(b.lat)) - Math.sin(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.cos(toRad(b.lng - a.lng));
+    return Math.atan2(y, x) * 180 / Math.PI;
   }
+  function setAnchor(ll) {
+    anchor = ll ? { lng: ll.lng, lat: ll.lat } : null;
+    updateSpot(!!ll);
+  }
+  function updateSpot(fly) {
+    if (!anchor) { spot = null; setSight(null); renderSpot(); return; }
+    const b = bitsAt(anchor);
+    if (b === undefined) { pendingFly = pendingFly || fly; spot = { ll: anchor, loading: true }; renderSpot(); return; }
+    fly = fly || pendingFly; pendingFly = false;
+    const vis = b === null ? [] : peaks.filter(p => (b >> p.bit) & 1);
+    spot = { ll: anchor, vis, outside: b === null };
+    setSight(anchor, vis);
+    renderSpot();
+    if (fly && !spot.outside) flyOblique(anchor, vis.length ? vis : peaks);
+  }
+  // look from the clicked spot towards the summits, tilted
+  function flyOblique(a, targets) {
+    if (!is3d) { is3d = true; map.setTerrain({ source: 'dem', exaggeration: 1.6 }); render(); }
+    const c = { lng: targets.reduce((s, p) => s + p.lon, 0) / targets.length, lat: targets.reduce((s, p) => s + p.lat, 0) / targets.length };
+    const brg = bearingTo(a, c);
+    const pad = narrow ? { top: 260, bottom: 40, left: 30, right: 30 } : { top: 60, bottom: 60, left: 420, right: 60 };
+    const bounds = new maplibregl.LngLatBounds([a.lng, a.lat], [a.lng, a.lat]);
+    targets.forEach(p => bounds.extend([p.lon, p.lat]));
+    const cam = map.cameraForBounds(bounds, { padding: pad, bearing: brg }) || { zoom: 8 };
+    const center = [a.lng + (c.lng - a.lng) * 0.4, a.lat + (c.lat - a.lat) * 0.4];
+    map.easeTo({ center, zoom: Math.min(cam.zoom + 0.4, 11), bearing: brg, pitch: 65, duration: 1800, padding: pad });
+  }
+  function renderSpot() {
+    const t = T[lang], el = document.getElementById('spot');
+    if (!spot) { el.innerHTML = `<p class="spot-hint">${t.spotHint}</p>`; return; }
+    const { lat, lng } = spot.ll;
+    const coord = lang === 'ja' ? `北緯 ${lat.toFixed(4)}°　東経 ${lng.toFixed(4)}°` : `${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E`;
+    let body;
+    if (spot.loading) body = '';
+    else if (spot.outside) body = `<p class="spot-none">${t.spotOutside}</p>`;
+    else if (!spot.vis.length) body = `<p class="spot-none">${t.tipNone}</p>`;
+    else body = `<p class="spot-head">${selected ? '' : `<span class="tsw" style="background:${layers.colors[spot.vis.length]}"></span>`}${t.tipHead(spot.vis.length)}</p><ul class="spot-list">` +
+      spot.vis.map(p => ({ p, d: distKm(spot.ll, p) })).sort((x, y) => x.d - y.d).map(({ p, d }) =>
+        `<li${p.id === selected ? ' class="sel"' : ''}><span>${lang === 'ja' ? p.name_ja : p.name_en}</span><span>${Math.round(d)} km</span></li>`).join('') + '</ul>';
+    el.innerHTML = `<div class="spot-top"><b>${t.spotTitle}</b><button type="button" id="spotClear">${t.spotClear}</button></div><p class="spot-coord">${coord}</p>` + body;
+    document.getElementById('spotClear').onclick = () => setAnchor(null);
+  }
+  map.getCanvas().style.cursor = 'crosshair';
+  map.on('click', e => setAnchor(e.lngLat));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && anchor) setAnchor(null); });
 
   function select(id) {
     selected = id;
@@ -290,7 +315,6 @@
     map.setLayoutProperty('vis-peak', 'visibility', id ? 'visible' : 'none');
     map.setLayoutProperty('vis-count', 'visibility', id ? 'none' : 'visible');
     Object.entries(peakEls).forEach(([k, el]) => el.classList.toggle('on', k === id));
-    hideTip();
     render();
   }
 
@@ -350,6 +374,7 @@
     const min = document.getElementById('panel').classList.contains('min');
     c.textContent = lang === 'ja' ? (min ? '説明を開く' : '説明をたたむ') : (min ? 'Show details' : 'Hide details');
     c.setAttribute('aria-expanded', String(!min));
+    renderSpot();
   }
 
   document.getElementById('pick').addEventListener('change', e => select(e.target.value || null));
@@ -365,7 +390,6 @@
       map.setTerrain(null);
       map.easeTo({ pitch: 0, bearing: 0, duration: 800, padding: { top: 0, bottom: 0, left: 0, right: 0 } });
     }
-    hideTip();
     render();
   });
   document.getElementById('op').addEventListener('input', e => {
