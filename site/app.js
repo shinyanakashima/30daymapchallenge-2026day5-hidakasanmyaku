@@ -25,11 +25,12 @@
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
       lead: s => `公園の陸域は東京都より広い。主な山頂${N}座のうち1座以上が地形の上で見える土地は、公園の${s.ratio_park}倍、東京都の${s.ratio_tokyo}倍になる。`,
       figPark: '公園の陸域面積', figTokyo: '東京都の面積', figVis: `主な山頂が1座以上見える土地`,
-      hint: '山頂の印をクリックすると、その山だけの見える範囲に切り替わります。地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示します。',
+      hint: '山頂の印をクリックすると、その山だけの見える範囲に切り替わります。地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示します。「立体表示にする」で地形を立体で見られます（右ドラッグまたは2本指で傾きと向きを変えられます）。色の濃さを下げると下の地形が見えやすくなります。',
       notesTitle: '注記・計算の条件・出典',
       modeAll: '色: 見える山の数（全' + N + '座）',
       modePeak: (p, r) => `${p.name_ja}（${p.elev_m.toLocaleString()} m）が見える土地: ${ha(p.visible_ha)}（公園の${r}倍）`,
       back: '全体に戻る', pickAll: '全15座をまとめて表示',
+      to3d: '立体表示にする', to2d: '平面表示に戻す', opacity: '色の濃さ',
       legendLo: '1座', legendHi: N + '座', single: '見える土地',
       tipNone: 'ここからは主な山頂が見えません', tipHead: n => `ここから見える山: ${n}座`,
       lang: 'English', ha: v => (v / 10000).toFixed(1) + '万ha',
@@ -45,6 +46,7 @@
 <li>標高データ: 国土地理院 標高タイル（DEM10B 由来、ズーム13）を30 m 間隔に間引き（平均）</li>
 <li>計算範囲: 東経141.0〜144.7度、北緯41.7〜44.1度（日高山脈からおよそ150 km）の陸地。海は標高0 m として扱い、面積には含めない</li>
 <li>座標系: JGD2011 / UTM 第54帯（EPSG:6690）</li>
+<li>立体表示: 同じ標高タイルから作った約100 m 間隔の標高を使い、高さを1.6倍に強調して表示</li>
 </ul>
 <h3>公園の区域</h3>
 <p>公園の区域境界は描いていません。OpenStreetMap には2024年の国立公園区域のデータが見つからず、環境省のGISデータも今回は取得できなかったためです。面積の比較は環境省資料の数値によります。</p>
@@ -63,11 +65,12 @@
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
       lead: s => `The park's land area is larger than Tokyo. Land from which at least one of its ${N} main peaks can be seen, by terrain alone, is ${s.ratio_park} times the park and ${s.ratio_tokyo} times Tokyo.`,
       figPark: 'Park land area', figTokyo: 'Area of Tokyo', figVis: 'Land that sees at least one main peak',
-      hint: 'Click a peak marker to show the area that sees that peak only. Hover over the map (tap on a phone) to list the peaks visible from that point.',
+      hint: 'Click a peak marker to show the area that sees that peak only. Hover over the map (tap on a phone) to list the peaks visible from that point. "Show in 3D" drapes the map over the terrain (right-drag or two fingers to tilt and rotate). Lower the colour opacity to see more of the terrain.',
       notesTitle: 'Notes, method and sources',
       modeAll: `Colour: number of peaks visible (of ${N})`,
       modePeak: (p, r) => `Land that sees ${p.name_en} (${p.elev_m.toLocaleString()} m): ${ha(p.visible_ha)} (${r} times the park)`,
       back: 'Show all', pickAll: 'All 15 peaks combined',
+      to3d: 'Show in 3D', to2d: 'Back to 2D', opacity: 'Colour opacity',
       legendLo: '1 peak', legendHi: N + ' peaks', single: 'Visible land',
       tipNone: 'No main peak visible from here', tipHead: n => `Peaks visible from here: ${n}`,
       lang: '日本語', ha: v => Math.round(v).toLocaleString('en') + ' ha',
@@ -83,6 +86,7 @@
 <li>Elevation: GSI elevation tiles (from DEM10B, zoom 13), averaged to a 30 m grid</li>
 <li>Extent: land within 141.0–144.7°E, 41.7–44.1°N (about 150 km around the Hidaka Mountains). The sea is treated as 0 m and excluded from areas</li>
 <li>Projection: JGD2011 / UTM zone 54N (EPSG:6690)</li>
+<li>3D view: elevation from the same tiles at about 100 m spacing, with heights exaggerated 1.6 times</li>
 </ul>
 <h3>Park boundary</h3>
 <p>The park boundary is not drawn. OpenStreetMap has no data for the 2024 national park area, and the Ministry of the Environment GIS data could not be obtained for this map. Area comparisons use the Ministry's published figures.</p>
@@ -112,12 +116,13 @@
         hs: { type: 'raster', tiles: ['tiles/hs/{z}/{x}/{y}.webp'], tileSize: 256, minzoom: 6, maxzoom: 11,
           bounds: layers.bounds,
           attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">国土地理院</a>' },
-        vis: { type: 'image', url: 'data/count.png', coordinates: layers.coordinates }
+        vis: { type: 'image', url: 'data/count.png', coordinates: layers.coordinates },
+        dem: { type: 'raster-dem', tiles: ['tiles/dem/{z}/{x}/{y}.png'], encoding: 'terrarium', tileSize: 256, minzoom: 6, maxzoom: 10, bounds: layers.bounds }
       },
       layers: [
         { id: 'bg', type: 'background', paint: { 'background-color': '#dfe5ea' } },
         { id: 'hs', type: 'raster', source: 'hs', paint: { 'raster-opacity': 1 } },
-        { id: 'vis', type: 'raster', source: 'vis', paint: { 'raster-opacity': 0.72, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } }
+        { id: 'vis', type: 'raster', source: 'vis', paint: { 'raster-opacity': 0.7, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } }
       ]
     },
     bounds: [[141.2, 41.85], [144.55, 43.95]],
@@ -126,7 +131,7 @@
     minZoom: 6, maxZoom: 13,
     attributionControl: { compact: narrow }
   });
-  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
+  map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
   map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
 
   // place labels
@@ -216,7 +221,6 @@
   function select(id) {
     selected = id;
     map.getSource('vis').updateImage({ url: id ? `data/peak_${id}.png` : 'data/count.png', coordinates: layers.coordinates });
-    map.setPaintProperty('vis', 'raster-opacity', id ? 0.6 : 0.72);
     Object.entries(peakEls).forEach(([k, el]) => el.classList.toggle('on', k === id));
     hideTip();
     render();
@@ -256,6 +260,9 @@
       el.setAttribute('aria-label', lang === 'ja' ? p.name_ja : p.name_en);
     });
     placeEls.forEach(o => { o.el.textContent = lang === 'ja' ? o.ja : o.en; });
+    document.getElementById('btn3d').textContent = is3d ? t.to2d : t.to3d;
+    document.getElementById('btn3d').setAttribute('aria-pressed', String(is3d));
+    document.getElementById('opLbl').textContent = t.opacity;
     const c = document.getElementById('collapse');
     const min = document.getElementById('panel').classList.contains('min');
     c.textContent = lang === 'ja' ? (min ? '説明を開く' : '説明をたたむ') : (min ? 'Show details' : 'Hide details');
@@ -263,6 +270,24 @@
   }
 
   document.getElementById('pick').addEventListener('change', e => select(e.target.value || null));
+  let is3d = false;
+  const btn3d = document.getElementById('btn3d');
+  btn3d.addEventListener('click', () => {
+    is3d = !is3d;
+    if (is3d) {
+      map.setTerrain({ source: 'dem', exaggeration: 1.6 });
+      map.easeTo({ center: [142.95, 42.62], zoom: narrow ? 7.9 : 8.5, pitch: 62, bearing: -70, duration: 1500,
+        padding: narrow ? { top: 160, bottom: 0, left: 0, right: 0 } : { top: 0, bottom: 0, left: 380, right: 0 } });
+    } else {
+      map.setTerrain(null);
+      map.easeTo({ pitch: 0, bearing: 0, duration: 800, padding: { top: 0, bottom: 0, left: 0, right: 0 } });
+    }
+    hideTip();
+    render();
+  });
+  document.getElementById('op').addEventListener('input', e => {
+    map.setPaintProperty('vis', 'raster-opacity', Number(e.target.value) / 100);
+  });
   document.getElementById('lang').addEventListener('click', () => {
     lang = lang === 'ja' ? 'en' : 'ja';
     const u = new URL(location.href); u.searchParams.set('lang', lang); history.replaceState(null, '', u);
