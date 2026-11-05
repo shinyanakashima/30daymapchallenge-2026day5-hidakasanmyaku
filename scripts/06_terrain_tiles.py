@@ -15,7 +15,7 @@ SRC = os.path.join(ROOT, "work", "dem_src.tif")
 OUT = os.path.join(ROOT, "site", "tiles", "dem")
 ZMIN, ZMAX = 6, 10
 SRC_Z = 12
-WEST, EAST, SOUTH, NORTH = 139.3, 146.0, 40.4, 45.6
+WEST, EAST, SOUTH, NORTH = 139.3, 146.0, 39.3, 45.6
 
 
 def lon2x(lon, z):

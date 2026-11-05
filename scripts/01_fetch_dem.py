@@ -15,8 +15,8 @@ from PIL import Image
 from rasterio.transform import from_origin
 
 Z = 12
-# 計算範囲（経緯度）: 北海道全体と青森県北部。見える土地が範囲の端に届かない広さ
-WEST, EAST, SOUTH, NORTH = 139.3, 146.0, 40.4, 45.6
+# 計算範囲（経緯度）: 北海道全体と東北地方北部。見える土地が範囲の端に届かない広さ
+WEST, EAST, SOUTH, NORTH = 139.3, 146.0, 39.3, 45.6
 URL = "https://cyberjapandata.gsi.go.jp/xyz/dem_png/{z}/{x}/{y}.png"
 WORK = os.path.join(os.path.dirname(__file__), "..", "work")
 CACHE = os.path.join(WORK, f"tiles_z{Z}")
