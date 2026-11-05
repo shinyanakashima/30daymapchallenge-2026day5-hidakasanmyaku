@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日本一広い国立公園は、どこから見える？</title>
+<meta name="description" content="日高山脈襟裳十勝国立公園の主な山頂15座が、地形の上でどこから見えるかを計算した地図。#30DayMapChallenge 2026 Day 5 Senses: Sight">
+<meta property="og:title" content="日本一広い国立公園は、どこから見える？">
+<meta property="og:description" content="日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park の主な山頂の可視領域">
+<meta property="og:image" content="https://shinyanakashima.github.io/30daymapchallenge-2026day5-hidakasanmyaku/card.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 14 6 4l3 5 2-3 4 8z' fill='%23963060'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="map" aria-label="地図"></div>
+
+<section id="panel">
+  <div class="panel-head">
+    <p class="kicker">#30DayMapChallenge 2026 · Day 5 · Senses: Sight</p>
+    <button id="lang" type="button" aria-label="Language">English</button>
+  </div>
+  <h1 data-i18n="title">日本一広い国立公園は、どこから見える？</h1>
+  <p class="sub" data-i18n="subtitle">日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park</p>
+  <p class="lead" id="lead"></p>
+  <div class="figs">
+    <div><span class="num" id="f-park"></span><span class="lbl" data-i18n="figPark">公園の陸域面積</span></div>
+    <div><span class="num" id="f-tokyo"></span><span class="lbl" data-i18n="figTokyo">東京都の面積</span></div>
+    <div class="hl"><span class="num" id="f-vis"></span><span class="lbl" data-i18n="figVis">主な山頂が1座以上見える土地</span></div>
+  </div>
+  <div id="mode"></div>
+  <select id="pick" aria-label="山を選ぶ / Choose a peak"></select>
+  <div id="legend"></div>
+  <p class="hint" data-i18n="hint">山頂の印をクリックすると、その山だけの見える範囲に切り替わります。地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示します。</p>
+  <details id="notes">
+    <summary data-i18n="notesTitle">注記・計算の条件・出典</summary>
+    <div id="notes-body"></div>
+  </details>
+  <button id="collapse" type="button" aria-expanded="true"></button>
+</section>
+
+<div id="tip" hidden></div>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
