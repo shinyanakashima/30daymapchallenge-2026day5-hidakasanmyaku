@@ -36,7 +36,7 @@ SNS投稿用の画像: [site/card.png](site/card.png)
 ## 注記
 
 - 標高データには木や建物が含まれていないため、「地形の上で見える範囲」です。森林や建物による遮り、天気や霞は考慮していません。
-- 公園の区域境界は描いていません。OpenStreetMap には2024年の国立公園区域のデータが見つからず（`boundary=national_park` / `boundary=protected_area` を確認）、環境省 生物多様性センターのGISデータ（gis.biodic.go.jp）も今回の作業環境から取得できなかったためです。
+- 緑の線は公園の区域（概略）です。環境省 生物多様性「見える化」マップの国立公園区域（原典: 環境省 EADAS 自然公園区域。令和6年6月25日告示の公園計画書・公園計画図・GISデータをもとに作成されたもの）から、日高山脈襟裳十勝国立公園の235区画を取得し、地種区分をまとめて1つの区域にしました。原典は区域の概要を示すもので誤差を含みます。このデータでの面積は約254,392 haで、面積の比較には環境省の公表値（陸域245,668 ha）を使っています。
 - 山の英語名は、環境省の英語資料で使われている表記（Mount Apoi）に合わせ、ほかの山も同じ形式で国土地理院の読みから表記しました。
 
 ## 計算の条件
@@ -85,6 +85,7 @@ SNS投稿用の画像: [site/card.png](site/card.png)
   - https://www.env.go.jp/en/press/111250.html
   - https://www.env.go.jp/content/000233127.pdf（日高山脈襟裳十勝国立公園の指定概要）
 - 東京都の面積: 国土地理院 全国都道府県市区町村別面積調
+- 公園の区域: 出典 環境省 生物多様性「見える化」マップ（https://www.biodiversitymap.env.go.jp/ ）を加工して作成（地種区分を統合し、線を単純化）。利用規約は政府標準利用規約（第2.0版）準拠
 - 地図ライブラリ: MapLibre GL JS
 
 ## 再現手順
@@ -112,11 +113,15 @@ sh scripts/04_hillshade_tiles.sh
 ```
 
 ```bash
-python3 scripts/05_card.py
+python3 scripts/06_terrain_tiles.py
 ```
 
 ```bash
-python3 scripts/06_terrain_tiles.py
+python3 scripts/07_park_boundary.py
+```
+
+```bash
+python3 scripts/05_card.py
 ```
 
 | スクリプト | 内容 |
@@ -125,8 +130,9 @@ python3 scripts/06_terrain_tiles.py
 | `02_viewshed.py` | 30 m 格子に変換し、山頂ごとの可視領域、ビット合成、見える山の数、面積集計、範囲の端の確認（`data/stats.json`） |
 | `03_export_web.py` | Web 表示用のタイル（`site/tiles/count/`、`site/tiles/mask/`）と画像（`site/data/`）を書き出す |
 | `04_hillshade_tiles.sh` | 背景の陰影図タイル（`site/tiles/hs/`）を作る |
-| `05_card.py` | SNS 投稿用の画像（`site/card.png`）を作る |
+| `05_card.py` | SNS 投稿用の画像（`site/card.png`）を作る（`07_park_boundary.py` の後に実行） |
 | `06_terrain_tiles.py` | 立体表示用の標高タイル（Terrarium 形式、`site/tiles/dem/`、ズーム6〜10）を作る |
+| `07_park_boundary.py` | 公園の区域を取得して1つにまとめる（`site/data/park.geojson`、`data/park.json`） |
 
 中間ファイルは `work/` に置かれ、リポジトリには含めていません。公開しているのは計算済みの画像とタイルだけで、ブラウザでは可視領域の計算をしていません。
 

@@ -92,6 +92,20 @@ def main():
     def halo(xy, text, font, fill=(20, 20, 20), anchor="la"):
         d.text(xy, text, font=font, fill=fill, anchor=anchor, stroke_width=3, stroke_fill=(255, 255, 255))
 
+    # 国立公園の区域（概略）
+    park = json.load(open(os.path.join(ROOT, "site", "data", "park.geojson"), encoding="utf-8"))
+    rings = []
+    for feat in park["features"]:
+        g = feat["geometry"]
+        polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
+        for poly in polys:
+            for ring in poly:
+                rings.append([px(lon, lat) for lon, lat in ring])
+    for ring in rings:
+        d.line(ring, fill=(255, 255, 255), width=5, joint="curve")
+    for ring in rings:
+        d.line(ring, fill=(31, 107, 61), width=2, joint="curve")
+
     for name, lon, lat in PLACES:
         x, y = px(lon, lat)
         if y < HEAD + 15:
@@ -117,20 +131,22 @@ def main():
 
     # legend
     lx, ly, w = 820, HEAD + 22, 340
-    d.rectangle((lx - 14, ly - 12, lx + w + 14, ly + 70), fill=(255, 255, 255), outline=(210, 214, 218))
+    d.rectangle((lx - 14, ly - 12, lx + w + 14, ly + 100), fill=(255, 255, 255), outline=(210, 214, 218))
     d.text((lx, ly), "見える山の数", font=f(18), fill=(25, 28, 32))
     for k in range(1, n + 1):
         x = lx + (k - 1) * w / n
         d.rectangle((x, ly + 28, lx + k * w / n, ly + 44), fill=ramp(k))
     d.text((lx, ly + 48), "1座", font=f(15), fill=(90, 96, 104))
     d.text((lx + w, ly + 48), f"{n}座", font=f(15), fill=(90, 96, 104), anchor="ra")
+    d.rectangle((lx, ly + 76, lx + 22, ly + 90), fill=(255, 255, 255), outline=(31, 107, 61), width=2)
+    d.text((lx + 30, ly + 83), "国立公園の区域（概略）", font=f(15), fill=(25, 28, 32), anchor="lm")
 
     # footer
     far = max(p["farthest_km"] for p in stats["peaks"])
     lines = [
-        "地形の上で見える範囲。木・建物・天気・霞は考慮していない。公園境界は描いていない。",
+        "地形の上で見える範囲。木・建物・天気・霞は考慮していない。緑の線は国立公園の区域（概略）。",
         f"条件: 目の高さ1.6 m、大気差係数0.85714、標高30 m 間隔、北海道全体と東北地方北部で計算（最も遠いのは岩手山付近、約{far:.0f} km）",
-        "出典: 国土地理院（標高タイル、日本の主な山岳標高）、環境省（国立公園の指定日・面積）",
+        "出典: 国土地理院（標高タイル、日本の主な山岳標高）、環境省（国立公園の指定日・面積、生物多様性「見える化」マップを加工して公園区域を作成）",
         "#30DayMapChallenge 2026 Day 5 Senses: Sight   shinyanakashima.github.io/30daymapchallenge-2026day5-hidakasanmyaku",
     ]
     fy = SIZE - 22 * len(lines) - 14

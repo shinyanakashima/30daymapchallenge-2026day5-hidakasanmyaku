@@ -3,3 +3,4 @@ pillow
 pyproj
 rasterio
 requests
+shapely
