@@ -112,7 +112,7 @@ def main():
     d.text((42, 92), "日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park", font=f(20), fill=(90, 96, 104))
     vis_man = stats["visible_any_ha"] / 10000
     d.text((42, 132), f"公園の陸域 24.6万ha は東京都（21.9万ha）より広い。", font=f(24), fill=(25, 28, 32))
-    d.text((42, 166), f"主な山頂{n}座のどれかが見える土地は {vis_man:.1f}万ha。公園の{stats['ratio_park']}倍、東京都の{stats['ratio_tokyo']}倍。",
+    d.text((42, 166), f"主な山頂{n}座のどれかが見える土地は {vis_man:.1f}万ha。公園の{stats['ratio_park']:.1f}倍、東京都の{stats['ratio_tokyo']:.1f}倍。",
            font=f(24), fill=(150, 48, 96))
 
     # legend
@@ -126,9 +126,10 @@ def main():
     d.text((lx + w, ly + 48), f"{n}座", font=f(15), fill=(90, 96, 104), anchor="ra")
 
     # footer
+    far = max(p["farthest_km"] for p in stats["peaks"])
     lines = [
         "地形の上で見える範囲。木・建物・天気・霞は考慮していない。公園境界は描いていない。",
-        "条件: 目の高さ1.6 m、大気差係数0.85714、標高30 m 間隔、日高山脈から約150 km の範囲",
+        f"条件: 目の高さ1.6 m、大気差係数0.85714、標高30 m 間隔、北海道全体と東北地方北部で計算（最も遠いのは岩手山付近、約{far:.0f} km）",
         "出典: 国土地理院（標高タイル、日本の主な山岳標高）、環境省（国立公園の指定日・面積）",
         "#30DayMapChallenge 2026 Day 5 Senses: Sight   shinyanakashima.github.io/30daymapchallenge-2026day5-hidakasanmyaku",
     ]

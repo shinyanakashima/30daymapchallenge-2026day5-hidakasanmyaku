@@ -6,6 +6,8 @@
   ]);
   const peaks = peaksGeo.features.map(f => ({ ...f.properties, lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
   const N = peaks.length;
+  const far = peaks.reduce((a, p) => (p.farthest_km > a.farthest_km ? p : a), peaks[0]);
+  const [BW, BS, BE, BN] = stats.conditions.bbox_lonlat;
   const LABELED = ['memuro', 'poroshiri', 'tokachiporoshiri', 'kamuiekuuchikaushi', 'petegari', 'rakko', 'apoi'];
   const MID = ['tokachiporoshiri', 'rakko'];
   const LEFT = ['chiroro', 'tottabetsu', 'poroshiri', 'esaoman', 'kamuiekuuchikaushi', 'kamui', 'apoi'];
@@ -16,21 +18,25 @@
     ['富良野', 'Furano', 142.3832, 43.3420], ['札幌', 'Sapporo', 141.3544, 43.0621],
     ['襟裳岬', 'Cape Erimo', 143.2489, 41.9255], ['浦河', 'Urakawa', 142.7681, 42.1686],
     ['広尾', 'Hiroo', 143.3117, 42.2869], ['新得', 'Shintoku', 142.8391, 43.0797],
-    ['足寄', 'Ashoro', 143.5543, 43.2448]
+    ['足寄', 'Ashoro', 143.5543, 43.2448], ['函館', 'Hakodate', 140.7288, 41.7687],
+    ['室蘭', 'Muroran', 140.9738, 42.3152], ['小樽', 'Otaru', 140.9947, 43.1907],
+    ['北見', 'Kitami', 143.8961, 43.8030], ['網走', 'Abashiri', 144.2737, 44.0206],
+    ['根室', 'Nemuro', 145.5856, 43.3302], ['名寄', 'Nayoro', 142.4635, 44.3560],
+    ['稚内', 'Wakkanai', 141.6730, 45.4156], ['青森', 'Aomori', 140.7400, 40.8244]
   ];
 
   const T = {
     ja: {
       title: '日本一広い国立公園は、どこから見える？',
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
-      lead: s => `公園の陸域は東京都より広い。主な山頂${N}座のうち1座以上が地形の上で見える土地は、公園の${s.ratio_park}倍、東京都の${s.ratio_tokyo}倍になる。`,
+      lead: s => `公園の陸域は東京都より広い。主な山頂${N}座のうち1座以上が地形の上で見える土地は、公園の${s.ratio_park.toFixed(1)}倍、東京都の${s.ratio_tokyo.toFixed(1)}倍になる。最も遠いのは岩手県の岩手山付近で、${far.name_ja}から約${Math.round(far.farthest_km)} km離れている。`,
       figPark: '公園の陸域面積', figTokyo: '東京都の面積', figVis: `主な山頂が1座以上見える土地`,
       hint: '山頂の印をクリックすると、その山だけの見える範囲に切り替わります。地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示し、見える山頂へ線を引きます。見えない山の印は薄くなります。「立体表示にする」で地形を立体で見られます（右ドラッグまたは2本指で傾きと向きを変えられます）。色の濃さを下げると下の地形が見えやすくなります。',
       notesTitle: '注記・計算の条件・出典',
       modeAll: '色: 見える山の数（全' + N + '座）',
       modePeak: (p, r) => `${p.name_ja}（${p.elev_m.toLocaleString()} m）が見える土地: ${ha(p.visible_ha)}（公園の${r}倍）`,
       back: '全体に戻る', pickAll: '全15座をまとめて表示',
-      to3d: '立体表示にする', to2d: '平面表示に戻す', opacity: '色の濃さ',
+      to3d: '立体表示にする', to2d: '平面表示に戻す', opacity: '色の濃さ', rangeLbl: '計算範囲',
       legendLo: '1座', legendHi: N + '座', single: '見える土地',
       tipNone: 'ここからは主な山頂が見えません', tipHead: n => `ここから見える山: ${n}座`,
       lang: 'English', ha: v => (v / 10000).toFixed(1) + '万ha',
@@ -43,10 +49,11 @@
 <li>観測点: 各山頂の地表（国土地理院の標高値の高さ）</li>
 <li>目標の高さ: 地表から1.6 m</li>
 <li>地球の丸みと大気差の補正: 係数 0.85714（屈折係数 0.13 相当）</li>
-<li>標高データ: 国土地理院 標高タイル（DEM10B 由来、ズーム13）を30 m 間隔に間引き（平均）</li>
-<li>計算範囲: 東経141.0〜144.7度、北緯41.7〜44.1度（日高山脈からおよそ150 km）の陸地。海は標高0 m として扱い、面積には含めない</li>
+<li>標高データ: 国土地理院 標高タイル（DEM10B 由来、ズーム12、約28 m 間隔）を30 m 間隔に平均</li>
+<li>計算範囲: 東経${BW}〜${BE}度、北緯${BS}〜${BN}度（北海道全体と青森県北部、地図の点線の枠）の陸地。見える土地が範囲の端に届いていないことを確認した。海は標高0 m として扱い、面積には含めない</li>
+<li>最も遠く見える地点: 岩手山付近（${far.name_ja}から約${Math.round(far.farthest_km)} km）。見える土地のうち約2.0万haは本州北部にある</li>
 <li>座標系: JGD2011 / UTM 第54帯（EPSG:6690）</li>
-<li>立体表示: 同じ標高タイルから作った約100 m 間隔の標高を使い、高さを1.6倍に強調して表示</li>
+<li>立体表示: 同じ標高タイルから作った約110 m 間隔の標高を使い、高さを1.6倍に強調して表示</li>
 </ul>
 <h3>公園の区域</h3>
 <p>公園の区域境界は描いていません。OpenStreetMap には2024年の国立公園区域のデータが見つからず、環境省のGISデータも今回は取得できなかったためです。面積の比較は環境省資料の数値によります。</p>
@@ -54,7 +61,7 @@
 <table>${peaks.map(p => `<tr><td>${p.name_ja}</td><td class="r">${p.elev_m.toLocaleString()} m</td><td class="r">${ha(p.visible_ha)}</td></tr>`).join('')}</table>
 <h3>出典</h3>
 <ul>
-<li>標高タイル、陰影起伏図、日本の主な山岳標高（2026年3月31日版）: 出典 国土地理院</li>
+<li>標高タイル（背景の陰影図と立体表示もこれから作成）、日本の主な山岳標高（2026年3月31日版）: 出典 国土地理院</li>
 <li>国立公園の指定日（2024年6月25日）・陸域面積（245,668 ha）: 環境省 報道発表資料、日高山脈襟裳十勝国立公園の指定概要</li>
 <li>東京都の面積（219,405 ha）: 国土地理院 全国都道府県市区町村別面積調</li>
 </ul>
@@ -63,14 +70,14 @@
     en: {
       title: "Where can you see Japan's largest national park from?",
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
-      lead: s => `The park's land area is larger than Tokyo. Land from which at least one of its ${N} main peaks can be seen, by terrain alone, is ${s.ratio_park} times the park and ${s.ratio_tokyo} times Tokyo.`,
+      lead: s => `The park's land area is larger than Tokyo. Land from which at least one of its ${N} main peaks can be seen, by terrain alone, is ${s.ratio_park.toFixed(1)} times the park and ${s.ratio_tokyo.toFixed(1)} times Tokyo. The farthest such point is near Mount Iwate in Iwate Prefecture, about ${Math.round(far.farthest_km)} km from ${far.name_en}.`,
       figPark: 'Park land area', figTokyo: 'Area of Tokyo', figVis: 'Land that sees at least one main peak',
       hint: 'Click a peak marker to show the area that sees that peak only. Hover over the map (tap on a phone) to list the peaks visible from that point; lines are drawn to the visible summits and the other peak markers fade. "Show in 3D" drapes the map over the terrain (right-drag or two fingers to tilt and rotate). Lower the colour opacity to see more of the terrain.',
       notesTitle: 'Notes, method and sources',
       modeAll: `Colour: number of peaks visible (of ${N})`,
       modePeak: (p, r) => `Land that sees ${p.name_en} (${p.elev_m.toLocaleString()} m): ${ha(p.visible_ha)} (${r} times the park)`,
       back: 'Show all', pickAll: 'All 15 peaks combined',
-      to3d: 'Show in 3D', to2d: 'Back to 2D', opacity: 'Colour opacity',
+      to3d: 'Show in 3D', to2d: 'Back to 2D', opacity: 'Colour opacity', rangeLbl: 'Calculation extent',
       legendLo: '1 peak', legendHi: N + ' peaks', single: 'Visible land',
       tipNone: 'No main peak visible from here', tipHead: n => `Peaks visible from here: ${n}`,
       lang: '日本語', ha: v => Math.round(v).toLocaleString('en') + ' ha',
@@ -83,10 +90,11 @@
 <li>Observer: on the ground at each summit (GSI summit elevation)</li>
 <li>Target height: 1.6 m above ground</li>
 <li>Earth curvature and refraction: coefficient 0.85714 (refraction coefficient 0.13)</li>
-<li>Elevation: GSI elevation tiles (from DEM10B, zoom 13), averaged to a 30 m grid</li>
-<li>Extent: land within 141.0–144.7°E, 41.7–44.1°N (about 150 km around the Hidaka Mountains). The sea is treated as 0 m and excluded from areas</li>
+<li>Elevation: GSI elevation tiles (from DEM10B, zoom 12, about 28 m spacing), averaged to a 30 m grid</li>
+<li>Extent: land within ${BW}–${BE}°E, ${BS}–${BN}°N (all of Hokkaido and northern Aomori; dashed outline on the map). No visible land reaches the edge of this extent. The sea is treated as 0 m and excluded from areas</li>
+<li>Farthest visible point: near Mount Iwate, about ${Math.round(far.farthest_km)} km from ${far.name_en}. About 20,000 ha of the visible land is in northern Honshu</li>
 <li>Projection: JGD2011 / UTM zone 54N (EPSG:6690)</li>
-<li>3D view: elevation from the same tiles at about 100 m spacing, with heights exaggerated 1.6 times</li>
+<li>3D view: elevation from the same tiles at about 110 m spacing, with heights exaggerated 1.6 times</li>
 </ul>
 <h3>Park boundary</h3>
 <p>The park boundary is not drawn. OpenStreetMap has no data for the 2024 national park area, and the Ministry of the Environment GIS data could not be obtained for this map. Area comparisons use the Ministry's published figures.</p>
@@ -94,7 +102,7 @@
 <table>${peaks.map(p => `<tr><td>${p.name_en}<br><span style="color:#777">${p.name_ja}</span></td><td class="r">${p.elev_m.toLocaleString()} m</td><td class="r">${ha(p.visible_ha)}</td></tr>`).join('')}</table>
 <h3>Sources</h3>
 <ul>
-<li>Elevation tiles, hillshade tiles, and major mountain elevations of Japan (31 March 2026 edition): Geospatial Information Authority of Japan (GSI)</li>
+<li>Elevation tiles (also used to make the background hillshade and the 3D terrain) and major mountain elevations of Japan (31 March 2026 edition): Geospatial Information Authority of Japan (GSI)</li>
 <li>Designation date (25 June 2024) and land area (245,668 ha): Ministry of the Environment, Japan</li>
 <li>Area of Tokyo (219,405 ha): GSI, area statistics by prefecture and municipality</li>
 </ul>
@@ -116,14 +124,18 @@
         hs: { type: 'raster', tiles: ['tiles/hs/{z}/{x}/{y}.webp'], tileSize: 256, minzoom: 6, maxzoom: 11,
           bounds: layers.bounds,
           attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">国土地理院</a>' },
-        vis: { type: 'image', url: 'data/count.png', coordinates: layers.coordinates },
+        count: { type: 'raster', tiles: ['tiles/count/{z}/{x}/{y}.png'], tileSize: 256, minzoom: layers.countZoom[0], maxzoom: layers.countZoom[1], bounds: layers.bounds },
+        peak: { type: 'image', url: `data/peak_${peaks[0].id}.png`, coordinates: layers.coordinates },
+        range: { type: 'geojson', data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [...layers.coordinates, layers.coordinates[0]] } } },
         sight: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
         dem: { type: 'raster-dem', tiles: ['tiles/dem/{z}/{x}/{y}.png'], encoding: 'terrarium', tileSize: 256, minzoom: 6, maxzoom: 10, bounds: layers.bounds }
       },
       layers: [
         { id: 'bg', type: 'background', paint: { 'background-color': '#dfe5ea' } },
         { id: 'hs', type: 'raster', source: 'hs', paint: { 'raster-opacity': 1 } },
-        { id: 'vis', type: 'raster', source: 'vis', paint: { 'raster-opacity': 0.7, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } },
+        { id: 'vis-count', type: 'raster', source: 'count', paint: { 'raster-opacity': 0.7, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } },
+        { id: 'vis-peak', type: 'raster', source: 'peak', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.7, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } },
+        { id: 'range', type: 'line', source: 'range', paint: { 'line-color': '#5b6168', 'line-width': 1.2, 'line-dasharray': [4, 3] } },
         { id: 'sight-casing', type: 'line', source: 'sight', filter: ['==', ['geometry-type'], 'LineString'],
           layout: { 'line-cap': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 3.2, 'line-opacity': 0.75 } },
         { id: 'sight-line', type: 'line', source: 'sight', filter: ['==', ['geometry-type'], 'LineString'],
@@ -132,9 +144,9 @@
           paint: { 'circle-radius': 4.5, 'circle-color': '#1f2328', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 2 } }
       ]
     },
-    bounds: [[141.2, 41.85], [144.55, 43.95]],
+    bounds: [[140.4, 41.3], [145.3, 44.4]],
     fitBoundsOptions: { padding: narrow ? { top: 150, bottom: 10, left: 10, right: 10 } : { top: 20, bottom: 20, left: 400, right: 20 } },
-    maxBounds: [[140.2, 41.2], [145.5, 44.6]],
+    maxBounds: [[layers.bounds[0] - 1, layers.bounds[1] - 0.6], [layers.bounds[2] + 1, layers.bounds[3] + 0.6]],
     minZoom: 6, maxZoom: 13,
     attributionControl: { compact: narrow }
   });
@@ -148,6 +160,11 @@
     new maplibregl.Marker({ element: el, anchor: 'left', offset: [-3, 0] }).setLngLat([lon, lat]).addTo(map);
     return { el, ja, en };
   });
+
+  // calculation extent label
+  const rangeEl = document.createElement('div');
+  rangeEl.className = 'range-lbl';
+  new maplibregl.Marker({ element: rangeEl, anchor: 'top-left', offset: [6, 4] }).setLngLat([layers.bounds[0], layers.bounds[3]]).addTo(map);
 
   // peak markers
   const peakEls = {};
@@ -169,30 +186,40 @@
   }
   map.on('zoom', updateZoomLabels);
 
-  // hover mask
-  let maskData = null, mW = 0, mH = 0;
-  const img = new Image();
-  img.onload = () => {
-    mW = img.naturalWidth; mH = img.naturalHeight;
-    const c = document.createElement('canvas'); c.width = mW; c.height = mH;
-    const ctx = c.getContext('2d', { willReadFrequently: true });
-    ctx.drawImage(img, 0, 0);
-    maskData = ctx.getImageData(0, 0, mW, mH).data;
-  };
-  img.src = 'data/mask.png';
-  const R = 6378137;
-  const mx = lon => R * lon * Math.PI / 180;
-  const my = lat => R * Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
+  // hover: small bit tiles loaded on demand
+  const MZ = layers.maskZoom;
+  const tileCache = new Map();
+  let lastHover = null;
+  function loadTile(key, x, y) {
+    tileCache.set(key, null);
+    const im = new Image();
+    im.onload = () => {
+      const c = document.createElement('canvas'); c.width = 256; c.height = 256;
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(im, 0, 0);
+      tileCache.set(key, ctx.getImageData(0, 0, 256, 256).data);
+      if (lastHover) showTip(lastHover);
+    };
+    im.onerror = () => tileCache.set(key, 'none');
+    im.src = `tiles/mask/${MZ}/${x}/${y}.png`;
+  }
   const [W, S, E, Nn] = layers.bounds;
-  const X0 = mx(W), X1 = mx(E), Y0 = my(S), Y1 = my(Nn);
+  // returns bit mask, null (sea / outside), or undefined (tile still loading)
   function bitsAt(ll) {
-    if (!maskData) return null;
-    const px = Math.floor((mx(ll.lng) - X0) / (X1 - X0) * mW);
-    const py = Math.floor((Y1 - my(ll.lat)) / (Y1 - Y0) * mH);
-    if (px < 0 || py < 0 || px >= mW || py >= mH) return null;
-    const i = (py * mW + px) * 4;
-    if (maskData[i + 2] !== 255) return null; // sea
-    return (maskData[i] << 8) | maskData[i + 1];
+    if (ll.lng < W || ll.lng > E || ll.lat < S || ll.lat > Nn) return null;
+    const n = 2 ** MZ;
+    const fx = (ll.lng + 180) / 360 * n;
+    const r = ll.lat * Math.PI / 180;
+    const fy = (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n;
+    const x = Math.floor(fx), y = Math.floor(fy);
+    const key = x + '/' + y;
+    if (!tileCache.has(key)) { loadTile(key, x, y); return undefined; }
+    const d = tileCache.get(key);
+    if (d === null) return undefined;
+    if (d === 'none') return null;
+    const i = (Math.floor((fy - y) * 256) * 256 + Math.floor((fx - x) * 256)) * 4;
+    if (d[i + 2] !== 255) return null; // sea
+    return (d[i] << 8) | d[i + 1];
   }
   const tip = document.getElementById('tip');
   const EMPTY = { type: 'FeatureCollection', features: [] };
@@ -218,9 +245,11 @@
       peakEls[p.id].classList.toggle('unseen', !ids.has(p.id));
     });
   }
-  function hideTip() { tip.hidden = true; setSight(null); }
+  function hideTip() { tip.hidden = true; lastHover = null; setSight(null); }
   function showTip(e) {
+    lastHover = { lngLat: e.lngLat, point: e.point };
     const b = bitsAt(e.lngLat);
+    if (b === undefined) return;
     if (b === null) { hideTip(); return; }
     const vis = peaks.filter(p => (b >> p.bit) & 1);
     setSight(e.lngLat, vis);
@@ -251,7 +280,9 @@
 
   function select(id) {
     selected = id;
-    map.getSource('vis').updateImage({ url: id ? `data/peak_${id}.png` : 'data/count.png', coordinates: layers.coordinates });
+    if (id) map.getSource('peak').updateImage({ url: `data/peak_${id}.png`, coordinates: layers.coordinates });
+    map.setLayoutProperty('vis-peak', 'visibility', id ? 'visible' : 'none');
+    map.setLayoutProperty('vis-count', 'visibility', id ? 'none' : 'visible');
     Object.entries(peakEls).forEach(([k, el]) => el.classList.toggle('on', k === id));
     hideTip();
     render();
@@ -290,6 +321,7 @@
       el.querySelector('.nm').textContent = lang === 'ja' ? p.name_ja : p.name_en.replace('Mount ', 'Mt. ');
       el.setAttribute('aria-label', lang === 'ja' ? p.name_ja : p.name_en);
     });
+    rangeEl.textContent = t.rangeLbl;
     placeEls.forEach(o => { o.el.textContent = lang === 'ja' ? o.ja : o.en; });
     document.getElementById('btn3d').textContent = is3d ? t.to2d : t.to3d;
     document.getElementById('btn3d').setAttribute('aria-pressed', String(is3d));
@@ -317,7 +349,7 @@
     render();
   });
   document.getElementById('op').addEventListener('input', e => {
-    map.setPaintProperty('vis', 'raster-opacity', Number(e.target.value) / 100);
+    ['vis-count', 'vis-peak'].forEach(l => map.setPaintProperty(l, 'raster-opacity', Number(e.target.value) / 100));
   });
   document.getElementById('lang').addEventListener('click', () => {
     lang = lang === 'ja' ? 'en' : 'ja';

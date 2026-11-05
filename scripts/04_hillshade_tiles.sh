@@ -17,5 +17,5 @@ h.GetRasterBand(1).WriteArray(a); h = None
 PY
 gdal_translate -q -of VRT -b 1 -b 1 -b 1 -a_nodata 0 work/hs_byte.tif work/hs_rgb.vrt
 rm -rf site/tiles/hs
-/usr/bin/python3.12 /usr/bin/gdal2tiles.py -q --xyz -z 6-11 -r average --tiledriver=WEBP --webp-quality=82 \
+/usr/bin/python3.12 /usr/bin/gdal2tiles.py -q --xyz -z 6-11 -r average --tiledriver=WEBP --webp-quality=75 \
   --processes=4 -w none work/hs_rgb.vrt site/tiles/hs

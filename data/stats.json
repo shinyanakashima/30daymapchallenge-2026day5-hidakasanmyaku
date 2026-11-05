@@ -1,27 +1,27 @@
 {
- "visible_any_ha": 1031574,
- "calc_land_ha": 4947592,
+ "visible_any_ha": 1113149,
+ "calc_land_ha": 11161264,
  "park_ha": 245668,
  "tokyo_ha": 219405,
- "ratio_park": 4.2,
- "ratio_tokyo": 4.7,
+ "ratio_park": 4.53,
+ "ratio_tokyo": 5.07,
  "count_hist_ha": {
-  "0": 3916019,
-  "1": 180648,
-  "2": 110123,
-  "3": 87838,
-  "4": 68801,
-  "5": 71234,
-  "6": 53667,
-  "7": 54333,
-  "8": 48289,
-  "9": 54225,
-  "10": 70745,
-  "11": 73672,
-  "12": 62503,
-  "13": 52739,
-  "14": 42757,
-  "15": 0
+  "0": 10048116,
+  "1": 194064,
+  "2": 116780,
+  "3": 95988,
+  "4": 75048,
+  "5": 75680,
+  "6": 58430,
+  "7": 58817,
+  "8": 49410,
+  "9": 55124,
+  "10": 66192,
+  "11": 85398,
+  "12": 74015,
+  "13": 52182,
+  "14": 55945,
+  "15": 76
  },
  "conditions": {
   "eye_height_m": 1.6,
@@ -29,12 +29,13 @@
   "dem_resolution_m": 30,
   "crs": "EPSG:6690",
   "bbox_lonlat": [
-   141.0,
-   41.7,
-   144.7,
-   44.1
+   139.3,
+   39.3,
+   146.0,
+   45.6
   ]
  },
+ "edge_cells_total": 0,
  "peaks": [
   {
    "id": "memuro",
@@ -45,8 +46,14 @@
    "lat": "42.868967",
    "lon": "142.785395",
    "bit": 0,
-   "visible_ha": 490903,
-   "observer_offset_m": 5.9
+   "visible_ha": 498839,
+   "observer_offset_m": 7.1,
+   "farthest_km": 234.3,
+   "farthest_lonlat": [
+    140.1139,
+    42.1509
+   ],
+   "edge_cells": 0
   },
   {
    "id": "chiroro",
@@ -57,8 +64,14 @@
    "lat": "42.825585",
    "lon": "142.675406",
    "bit": 1,
-   "visible_ha": 499815,
-   "observer_offset_m": 5.3
+   "visible_ha": 542368,
+   "observer_offset_m": 6.6,
+   "farthest_km": 291.2,
+   "farthest_lonlat": [
+    140.8417,
+    40.6032
+   ],
+   "edge_cells": 0
   },
   {
    "id": "pipairo",
@@ -69,8 +82,14 @@
    "lat": "42.773184",
    "lon": "142.72761",
    "bit": 2,
-   "visible_ha": 424446,
-   "observer_offset_m": 9.5
+   "visible_ha": 440901,
+   "observer_offset_m": 11.0,
+   "farthest_km": 265.6,
+   "farthest_lonlat": [
+    140.4029,
+    41.1383
+   ],
+   "edge_cells": 0
   },
   {
    "id": "tottabetsu",
@@ -81,8 +100,14 @@
    "lat": "42.738665",
    "lon": "142.695107",
    "bit": 3,
-   "visible_ha": 483183,
-   "observer_offset_m": 9.9
+   "visible_ha": 523689,
+   "observer_offset_m": 13.9,
+   "farthest_km": 262.6,
+   "farthest_lonlat": [
+    140.3926,
+    41.1261
+   ],
+   "edge_cells": 0
   },
   {
    "id": "poroshiri",
@@ -93,8 +118,14 @@
    "lat": "42.719435",
    "lon": "142.682894",
    "bit": 4,
-   "visible_ha": 566952,
-   "observer_offset_m": 5.8
+   "visible_ha": 618417,
+   "observer_offset_m": 8.2,
+   "farthest_km": 289.8,
+   "farthest_lonlat": [
+    140.9645,
+    40.4616
+   ],
+   "edge_cells": 0
   },
   {
    "id": "esaoman",
@@ -105,8 +136,14 @@
    "lat": "42.689411",
    "lon": "142.757826",
    "bit": 5,
-   "visible_ha": 435115,
-   "observer_offset_m": 4.5
+   "visible_ha": 476346,
+   "observer_offset_m": 6.2,
+   "farthest_km": 289.9,
+   "farthest_lonlat": [
+    140.9749,
+    40.4595
+   ],
+   "edge_cells": 0
   },
   {
    "id": "satsunai",
@@ -117,8 +154,14 @@
    "lat": "42.693848",
    "lon": "142.79675",
    "bit": 6,
-   "visible_ha": 407897,
-   "observer_offset_m": 10.6
+   "visible_ha": 430923,
+   "observer_offset_m": 12.1,
+   "farthest_km": 264.1,
+   "farthest_lonlat": [
+    140.3986,
+    41.1418
+   ],
+   "edge_cells": 0
   },
   {
    "id": "tokachiporoshiri",
@@ -129,8 +172,14 @@
    "lat": "42.695467",
    "lon": "142.859408",
    "bit": 7,
-   "visible_ha": 428872,
-   "observer_offset_m": 9.0
+   "visible_ha": 432918,
+   "observer_offset_m": 11.5,
+   "farthest_km": 198.6,
+   "farthest_lonlat": [
+    144.8792,
+    43.6829
+   ],
+   "edge_cells": 0
   },
   {
    "id": "kamuiekuuchikaushi",
@@ -141,8 +190,14 @@
    "lat": "42.625112",
    "lon": "142.766406",
    "bit": 8,
-   "visible_ha": 496002,
-   "observer_offset_m": 10.9
+   "visible_ha": 544079,
+   "observer_offset_m": 13.7,
+   "farthest_km": 343.0,
+   "farthest_lonlat": [
+    141.0025,
+    39.851
+   ],
+   "edge_cells": 0
   },
   {
    "id": "p1839",
@@ -153,8 +208,14 @@
    "lat": "42.539346",
    "lon": "142.808116",
    "bit": 9,
-   "visible_ha": 442655,
-   "observer_offset_m": 7.3
+   "visible_ha": 490087,
+   "observer_offset_m": 11.0,
+   "farthest_km": 336.0,
+   "farthest_lonlat": [
+    141.0025,
+    39.851
+   ],
+   "edge_cells": 0
   },
   {
    "id": "petegari",
@@ -165,8 +226,14 @@
    "lat": "42.499337",
    "lon": "142.871019",
    "bit": 10,
-   "visible_ha": 475808,
-   "observer_offset_m": 4.9
+   "visible_ha": 515136,
+   "observer_offset_m": 7.9,
+   "farthest_km": 334.4,
+   "farthest_lonlat": [
+    141.0009,
+    39.8527
+   ],
+   "edge_cells": 0
   },
   {
    "id": "kamui",
@@ -177,8 +244,14 @@
    "lat": "42.428465",
    "lon": "142.906866",
    "bit": 11,
-   "visible_ha": 311358,
-   "observer_offset_m": 0.9
+   "visible_ha": 444704,
+   "observer_offset_m": 2.6,
+   "farthest_km": 294.6,
+   "farthest_lonlat": [
+    140.3013,
+    40.651
+   ],
+   "edge_cells": 0
   },
   {
    "id": "pirikanupuri",
@@ -189,8 +262,14 @@
    "lat": "42.402225",
    "lon": "142.966802",
    "bit": 12,
-   "visible_ha": 488910,
-   "observer_offset_m": 2.8
+   "visible_ha": 529182,
+   "observer_offset_m": 5.3,
+   "farthest_km": 329.0,
+   "farthest_lonlat": [
+    141.0006,
+    39.8527
+   ],
+   "edge_cells": 0
   },
   {
    "id": "rakko",
@@ -201,8 +280,14 @@
    "lat": "42.272513",
    "lon": "143.111252",
    "bit": 13,
-   "visible_ha": 417292,
-   "observer_offset_m": 3.7
+   "visible_ha": 446678,
+   "observer_offset_m": 5.5,
+   "farthest_km": 282.2,
+   "farthest_lonlat": [
+    141.5409,
+    40.0378
+   ],
+   "edge_cells": 0
   },
   {
    "id": "apoi",
@@ -213,8 +298,14 @@
    "lat": "42.107849",
    "lon": "143.025658",
    "bit": 14,
-   "visible_ha": 55330,
-   "observer_offset_m": 6.9
+   "visible_ha": 65815,
+   "observer_offset_m": 9.7,
+   "farthest_km": 248.6,
+   "farthest_lonlat": [
+    140.845,
+    40.6004
+   ],
+   "edge_cells": 0
   }
  ]
 }

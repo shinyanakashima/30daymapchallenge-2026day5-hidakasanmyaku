@@ -98,9 +98,7 @@ def main():
     shutil.rmtree(tdir, ignore_errors=True)
     zmin, zmax = COUNT_Z
     for z in range(zmin, zmax + 1):
-        # 上位ズームでは、画素に含まれる最大の山の数で表す
-        cnt, ax0, ay0 = warp_tiles(os.path.join(WORK, "count.tif"), os.path.join(WORK, "count_tiles.tif"), bbox, z, 255,
-                                   "near" if z == zmax else "max")
+        cnt, ax0, ay0 = warp_tiles(os.path.join(WORK, "count.tif"), os.path.join(WORK, "count_tiles.tif"), bbox, z, 255)
         arr = np.where((cnt >= 1) & (cnt <= n), cnt, 0).astype(np.uint8)
         tx0, tx1, ty0, ty1 = tile_range(bbox, z)
         for tx in range(tx0, tx1 + 1):

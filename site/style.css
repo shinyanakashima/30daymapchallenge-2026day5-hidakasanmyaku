@@ -66,6 +66,7 @@ summary { cursor: pointer; font-weight: 600; }
 .peak.r .nm { left: 17px; }
 .peak.l .nm { right: 17px; }
 .peak.minor .nm { display: none; }
+.range-lbl { font-size: 11px; color: #5b6168; white-space: nowrap; pointer-events: none; text-shadow: 0 0 2px #fff, 0 0 3px #fff; }
 .place { font-size: 12px; color: #333; white-space: nowrap; text-shadow: 0 0 2px #fff, 0 0 3px #fff; pointer-events: none; }
 .place::before { content: ""; display: inline-block; width: 5px; height: 5px; background: #333; border-radius: 50%; margin-right: 3px; vertical-align: middle; }
 .place.nodot::before { display: none; }
