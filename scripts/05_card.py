@@ -95,16 +95,23 @@ def main():
     # 国立公園の区域（概略）
     park = json.load(open(os.path.join(ROOT, "site", "data", "park.geojson"), encoding="utf-8"))
     rings = []
+    over = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    od = ImageDraw.Draw(over)
     for feat in park["features"]:
         g = feat["geometry"]
         polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
         for poly in polys:
-            for ring in poly:
-                rings.append([px(lon, lat) for lon, lat in ring])
+            pr = [[px(lon, lat) for lon, lat in ring] for ring in poly]
+            od.polygon(pr[0], fill=(0, 166, 81, 56))
+            for hole in pr[1:]:
+                od.polygon(hole, fill=(0, 0, 0, 0))
+            rings += pr
+    img.paste(Image.alpha_composite(img.convert("RGBA"), over).convert("RGB"))
+    d = ImageDraw.Draw(img)
     for ring in rings:
-        d.line(ring, fill=(255, 255, 255), width=5, joint="curve")
+        d.line(ring, fill=(255, 255, 255), width=7, joint="curve")
     for ring in rings:
-        d.line(ring, fill=(31, 107, 61), width=2, joint="curve")
+        d.line(ring, fill=(0, 135, 62), width=3, joint="curve")
 
     for name, lon, lat in PLACES:
         x, y = px(lon, lat)
@@ -126,19 +133,19 @@ def main():
     d.text((42, 92), "日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park", font=f(20), fill=(90, 96, 104))
     vis_man = stats["visible_any_ha"] / 10000
     d.text((42, 132), f"公園の陸域 24.6万ha は東京都（21.9万ha）より広い。", font=f(24), fill=(25, 28, 32))
-    d.text((42, 166), f"主な山頂{n}座のどれかが見える土地は {vis_man:.1f}万ha。公園の{stats['ratio_park']:.1f}倍、東京都の{stats['ratio_tokyo']:.1f}倍。",
+    d.text((42, 166), f"主な山頂{n}座のどれかが見える場所は {vis_man:.1f}万ha。公園の{stats['ratio_park']:.1f}倍、東京都の{stats['ratio_tokyo']:.1f}倍。",
            font=f(24), fill=(150, 48, 96))
 
     # legend
     lx, ly, w = 820, HEAD + 22, 340
     d.rectangle((lx - 14, ly - 12, lx + w + 14, ly + 100), fill=(255, 255, 255), outline=(210, 214, 218))
-    d.text((lx, ly), "見える山の数", font=f(18), fill=(25, 28, 32))
+    d.text((lx, ly), "その場所から見える山頂の数", font=f(18), fill=(25, 28, 32))
     for k in range(1, n + 1):
         x = lx + (k - 1) * w / n
         d.rectangle((x, ly + 28, lx + k * w / n, ly + 44), fill=ramp(k))
     d.text((lx, ly + 48), "1座", font=f(15), fill=(90, 96, 104))
-    d.text((lx + w, ly + 48), f"{n}座", font=f(15), fill=(90, 96, 104), anchor="ra")
-    d.rectangle((lx, ly + 76, lx + 22, ly + 90), fill=(255, 255, 255), outline=(31, 107, 61), width=2)
+    d.text((lx + w, ly + 48), f"{n}座すべて", font=f(15), fill=(90, 96, 104), anchor="ra")
+    d.rectangle((lx, ly + 76, lx + 22, ly + 90), fill=(204, 237, 219), outline=(0, 135, 62), width=3)
     d.text((lx + 30, ly + 83), "国立公園の区域（概略）", font=f(15), fill=(25, 28, 32), anchor="lm")
 
     # footer

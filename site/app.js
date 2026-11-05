@@ -29,15 +29,16 @@
     ja: {
       title: '日本一広い国立公園は、どこから見える？',
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
-      lead: s => `公園の陸域は東京都より広い。主な山頂${N}座のうち1座以上が地形の上で見える土地は、公園の${s.ratio_park.toFixed(1)}倍、東京都の${s.ratio_tokyo.toFixed(1)}倍になる。最も遠いのは岩手県の岩手山付近で、${far.name_ja}から約${Math.round(far.farthest_km)} km離れている。`,
-      figPark: '公園の陸域面積', figTokyo: '東京都の面積', figVis: `主な山頂が1座以上見える土地`,
+      lead: s => `公園の陸域は東京都より広い。この公園の主な山頂${N}座のうち、どれか1座でも地形の上で見える場所を合わせると、公園の${s.ratio_park.toFixed(1)}倍、東京都の${s.ratio_tokyo.toFixed(1)}倍の広さになる。最も遠いのは岩手県の岩手山付近で、${far.name_ja}から約${Math.round(far.farthest_km)} km離れている。`,
+      figPark: '公園の陸域面積', figTokyo: '東京都の面積', figVis: '主な山頂が1座でも見える場所の広さ',
       hint: '山頂の印をクリックすると、その山だけの見える範囲に切り替わります。地図上の地点にカーソルを乗せる（スマートフォンではタップする）と、そこから見える山の名前を表示し、見える山頂へ線を引きます。見えない山の印は薄くなります。「立体表示にする」で地形を立体で見られます（右ドラッグまたは2本指で傾きと向きを変えられます）。色の濃さを下げると下の地形が見えやすくなります。',
       notesTitle: '注記・計算の条件・出典',
-      modeAll: '色: 見える山の数（全' + N + '座）',
-      modePeak: (p, r) => `${p.name_ja}（${p.elev_m.toLocaleString()} m）が見える土地: ${ha(p.visible_ha)}（公園の${r}倍）`,
+      modeAll: `色の意味: その場所から、${N}座のうち何座の山頂が見えるか`,
+      legendNone: '色の付いていない陸地からは、どの山頂も見えない',
+      modePeak: (p, r) => `赤い場所に立つと、${p.name_ja}（${p.elev_m.toLocaleString()} m）の山頂が見える。その広さは${ha(p.visible_ha)}（公園の${r}倍）`,
       back: '全体に戻る', pickAll: '全15座をまとめて表示',
       to3d: '立体表示にする', to2d: '平面表示に戻す', opacity: '色の濃さ', rangeLbl: '計算範囲', parkKey: '日高山脈襟裳十勝国立公園の区域（概略）',
-      legendLo: '1座', legendHi: N + '座', single: '見える土地',
+      legendLo: '1座', legendHi: N + '座すべて', single: 'この山頂が見える場所',
       tipNone: 'ここからは主な山頂が見えません', tipHead: n => `ここから見える山: ${n}座`,
       lang: 'English', ha: v => (v / 10000).toFixed(1) + '万ha',
       notes: () => `
@@ -57,7 +58,7 @@
 </ul>
 <h3>公園の区域</h3>
 <p>緑の線は、環境省 生物多様性「見える化」マップの国立公園区域（原典: 環境省 EADAS 自然公園区域、令和6年6月25日告示の公園計画書・公園計画図・GISデータ）をもとに、地種区分をまとめて1つの区域にしたものです。原典は区域の概要を示すもので誤差を含みます（このデータでの面積は約25.4万ha）。面積の比較には環境省の公表値（陸域245,668 ha）を使っています。</p>
-<h3>使った山頂（見える土地の面積）</h3>
+<h3>使った山頂（その山頂が見える場所の広さ）</h3>
 <table>${peaks.map(p => `<tr><td>${p.name_ja}</td><td class="r">${p.elev_m.toLocaleString()} m</td><td class="r">${ha(p.visible_ha)}</td></tr>`).join('')}</table>
 <h3>出典</h3>
 <ul>
@@ -71,15 +72,16 @@
     en: {
       title: "Where can you see Japan's largest national park from?",
       subtitle: '日高山脈襟裳十勝国立公園 / Hidakasanmyaku-Erimo-Tokachi National Park',
-      lead: s => `The park's land area is larger than Tokyo. Land from which at least one of its ${N} main peaks can be seen, by terrain alone, is ${s.ratio_park.toFixed(1)} times the park and ${s.ratio_tokyo.toFixed(1)} times Tokyo. The farthest such point is near Mount Iwate in Iwate Prefecture, about ${Math.round(far.farthest_km)} km from ${far.name_en}.`,
-      figPark: 'Park land area', figTokyo: 'Area of Tokyo', figVis: 'Land that sees at least one main peak',
+      lead: s => `The park's land area is larger than Tokyo. All the places from which at least one of its ${N} main peaks can be seen, by terrain alone, add up to ${s.ratio_park.toFixed(1)} times the park and ${s.ratio_tokyo.toFixed(1)} times Tokyo. The farthest such point is near Mount Iwate in Iwate Prefecture, about ${Math.round(far.farthest_km)} km from ${far.name_en}.`,
+      figPark: 'Park land area', figTokyo: 'Area of Tokyo', figVis: 'Area of places that can see at least one main peak',
       hint: 'Click a peak marker to show the area that sees that peak only. Hover over the map (tap on a phone) to list the peaks visible from that point; lines are drawn to the visible summits and the other peak markers fade. "Show in 3D" drapes the map over the terrain (right-drag or two fingers to tilt and rotate). Lower the colour opacity to see more of the terrain.',
       notesTitle: 'Notes, method and sources',
-      modeAll: `Colour: number of peaks visible (of ${N})`,
-      modePeak: (p, r) => `Land that sees ${p.name_en} (${p.elev_m.toLocaleString()} m): ${ha(p.visible_ha)} (${r} times the park)`,
+      modeAll: `Colour: how many of the ${N} peaks can be seen from each place`,
+      legendNone: 'Uncoloured land cannot see any of them',
+      modePeak: (p, r) => `Stand anywhere in red and you can see the summit of ${p.name_en} (${p.elev_m.toLocaleString()} m). That area is ${ha(p.visible_ha)} (${r} times the park)`,
       back: 'Show all', pickAll: 'All 15 peaks combined',
       to3d: 'Show in 3D', to2d: 'Back to 2D', opacity: 'Colour opacity', rangeLbl: 'Calculation extent', parkKey: 'Hidakasanmyaku-Erimo-Tokachi National Park (approximate)',
-      legendLo: '1 peak', legendHi: N + ' peaks', single: 'Visible land',
+      legendLo: '1 peak', legendHi: 'all ' + N, single: 'Places that can see this summit',
       tipNone: 'No main peak visible from here', tipHead: n => `Peaks visible from here: ${n}`,
       lang: '日本語', ha: v => Math.round(v).toLocaleString('en') + ' ha',
       notes: () => `
@@ -99,7 +101,7 @@
 </ul>
 <h3>Park boundary</h3>
 <p>The green line is the national park area from the Ministry of the Environment Biodiversity Map (original data: Ministry of the Environment EADAS natural park areas, based on the park plan and GIS data announced on 25 June 2024), with all zones merged into one area. The original data shows the outline only and contains errors (about 254,000 ha in this data). Area comparisons use the Ministry's published land area of 245,668 ha.</p>
-<h3>Peaks used (visible land area)</h3>
+<h3>Peaks used (area of places that can see each summit)</h3>
 <table>${peaks.map(p => `<tr><td>${p.name_en}<br><span style="color:#777">${p.name_ja}</span></td><td class="r">${p.elev_m.toLocaleString()} m</td><td class="r">${ha(p.visible_ha)}</td></tr>`).join('')}</table>
 <h3>Sources</h3>
 <ul>
@@ -136,12 +138,14 @@
       layers: [
         { id: 'bg', type: 'background', paint: { 'background-color': '#dfe5ea' } },
         { id: 'hs', type: 'raster', source: 'hs', paint: { 'raster-opacity': 1 } },
-        { id: 'park-fill', type: 'fill', source: 'park', paint: { 'fill-color': '#2f7a4b', 'fill-opacity': 0.12 } },
         { id: 'vis-count', type: 'raster', source: 'count', paint: { 'raster-opacity': 0.7, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } },
         { id: 'vis-peak', type: 'raster', source: 'peak', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.7, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } },
         { id: 'range', type: 'line', source: 'range', paint: { 'line-color': '#5b6168', 'line-width': 1.2, 'line-dasharray': [4, 3] } },
-        { id: 'park-casing', type: 'line', source: 'park', paint: { 'line-color': '#ffffff', 'line-width': 3.4, 'line-opacity': 0.8 } },
-        { id: 'park-line', type: 'line', source: 'park', paint: { 'line-color': '#1f6b3d', 'line-width': 1.6 } },
+        { id: 'park-fill', type: 'fill', source: 'park', paint: { 'fill-color': '#00a651', 'fill-opacity': 0.22 } },
+        { id: 'park-casing', type: 'line', source: 'park', layout: { 'line-join': 'round' },
+          paint: { 'line-color': '#ffffff', 'line-opacity': 0.95, 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 4, 10, 7] } },
+        { id: 'park-line', type: 'line', source: 'park', layout: { 'line-join': 'round' },
+          paint: { 'line-color': '#00873e', 'line-width': ['interpolate', ['linear'], ['zoom'], 6, 2, 10, 3.5] } },
         { id: 'sight-casing', type: 'line', source: 'sight', filter: ['==', ['geometry-type'], 'LineString'],
           layout: { 'line-cap': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 3.2, 'line-opacity': 0.75 } },
         { id: 'sight-line', type: 'line', source: 'sight', filter: ['==', ['geometry-type'], 'LineString'],
@@ -294,7 +298,12 @@
     render();
   }
 
-  const parkKey = t => `<div class="single park-key"><span class="pk"></span>${t.parkKey}</div>`;
+  let parkOn = true;
+  const parkKey = t => `<label class="single park-key"><input type="checkbox" id="parkToggle"${parkOn ? ' checked' : ''}><span class="pk"></span>${t.parkKey}</label>`;
+  function setPark(on) {
+    parkOn = on;
+    ['park-fill', 'park-casing', 'park-line'].forEach(l => map.setLayoutProperty(l, 'visibility', on ? 'visible' : 'none'));
+  }
   function render() {
     const t = T[lang];
     document.documentElement.lang = lang;
@@ -317,7 +326,7 @@
     } else {
       mode.textContent = t.modeAll;
       lg.innerHTML = '<div class="bar">' + Object.values(layers.colors).map(c => `<span style="background:${c}"></span>`).join('') +
-        `</div><div class="ticks"><span>${t.legendLo}</span><span>${t.legendHi}</span></div>` + parkKey(t);
+        `</div><div class="ticks"><span>${t.legendLo}</span><span>${t.legendHi}</span></div><div class="none">${t.legendNone}</div>` + parkKey(t);
     }
     const pick = document.getElementById('pick');
     pick.innerHTML = `<option value="">${t.pickAll}</option>` + peaks.map(p =>
@@ -357,6 +366,9 @@
   });
   document.getElementById('op').addEventListener('input', e => {
     ['vis-count', 'vis-peak'].forEach(l => map.setPaintProperty(l, 'raster-opacity', Number(e.target.value) / 100));
+  });
+  document.getElementById('legend').addEventListener('change', e => {
+    if (e.target.id === 'parkToggle') setPark(e.target.checked);
   });
   document.getElementById('lang').addEventListener('click', () => {
     lang = lang === 'ja' ? 'en' : 'ja';

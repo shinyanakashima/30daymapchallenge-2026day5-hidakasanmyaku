@@ -34,8 +34,10 @@ h1 { font-size: 20px; line-height: 1.35; margin: 6px 0 2px; }
 #legend .bar span { flex: 1; }
 #legend .ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
 #legend .single { display: flex; align-items: center; gap: 6px; font-size: 12px; }
-#legend .park-key { margin-top: 6px; }
-#legend .pk { width: 16px; height: 10px; border: 2px solid #1f6b3d; background: rgba(47,122,75,.12); display: inline-block; }
+#legend .none { font-size: 11px; color: var(--muted); margin-top: 2px; }
+#legend .park-key { margin-top: 8px; cursor: pointer; font-weight: 600; }
+#legend .park-key input { margin: 0; accent-color: #00873e; width: 15px; height: 15px; cursor: pointer; }
+#legend .pk { width: 18px; height: 12px; border: 3px solid #00873e; background: rgba(0,166,81,.22); display: inline-block; flex: none; }
 #legend .sw { width: 14px; height: 14px; background: #c8283c; display: inline-block; }
 #view { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
 #btn3d { font: inherit; font-size: 12px; border: 1px solid var(--accent); color: var(--accent); background: #fff; border-radius: 4px; padding: 3px 10px; cursor: pointer; }
